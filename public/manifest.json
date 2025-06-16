@@ -2,7 +2,7 @@
   "name": "Airbnb PWA",
   "short_name": "Airbnb",
   "description": "Airbnb Progressive Web App",
-  "start_url": "/",
+  "start_ur l": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
