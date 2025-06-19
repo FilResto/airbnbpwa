@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container } from '@mui/material';
+import { CssBaseline, Container, Box } from '@mui/material';
 import FormWizard from './components/FormWizard';
 import AdminPanel from './components/AdminPanel';
 
@@ -52,13 +52,36 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Container maxWidth="md" sx={{ py: 4, px: { xs: 2, sm: 3 }, mx: 'auto' }}>
-          <Routes>
-            <Route path="/" element={<FormWizard />} />
-            <Route path="/sezione/:step" element={<FormWizard />} />
-            <Route path="/admin" element={<AdminPanel />} />
-          </Routes>
-        </Container>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            overflowY: 'auto',
+            backgroundColor: 'background.default',
+            py: 4,
+          }}
+        >
+          <Container 
+            maxWidth="sm" 
+            sx={{ 
+              px: { xs: 2, sm: 3 },
+              width: '100%',
+              maxWidth: { xs: '100%', sm: '1000px' }
+            }}
+          >
+            <Routes>
+              <Route path="/" element={<FormWizard />} />
+              <Route path="/sezione/:step" element={<FormWizard />} />
+              <Route path="/admin" element={<AdminPanel />} />
+            </Routes>
+          </Container>
+        </Box>
       </Router>
     </ThemeProvider>
   );

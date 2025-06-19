@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import {
   Box,
   Typography,
@@ -39,28 +39,87 @@ const elettrodomestici = [
   'Luci / Lampadine',
 ];
 
+// Componente memoizzato per ogni riga della tabella
+const ElettrodomesticoRow = memo(({ dispositivo, status, problema, onStatusChange, onProblemChange }) => {
+  return (
+    <TableRow 
+      sx={{ 
+        '&:nth-of-type(odd)': { bgcolor: 'action.hover' },
+        '&:hover': { bgcolor: 'action.selected' }
+      }}
+    >
+      <TableCell component="th" scope="row">
+        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+          {dispositivo}
+        </Typography>
+      </TableCell>
+      <TableCell align="center">
+        <Radio
+          checked={status === 'si'}
+          onChange={() => onStatusChange(dispositivo, 'si')}
+          value="si"
+          name={`${dispositivo}_status`}
+          color="success"
+        />
+      </TableCell>
+      <TableCell align="center">
+        <Radio
+          checked={status === 'no'}
+          onChange={() => onStatusChange(dispositivo, 'no')}
+          value="no"
+          name={`${dispositivo}_status`}
+          color="error"
+        />
+      </TableCell>
+      <TableCell align="center">
+        <Radio
+          checked={status === 'na'}
+          onChange={() => onStatusChange(dispositivo, 'na')}
+          value="na"
+          name={`${dispositivo}_status`}
+          color="default"
+        />
+      </TableCell>
+      <TableCell>
+        {status === 'no' && (
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Descrivi il problema..."
+            value={problema}
+            onChange={(e) => onProblemChange(dispositivo, e.target.value)}
+            multiline
+            maxRows={2}
+            sx={{ minWidth: 200 }}
+          />
+        )}
+      </TableCell>
+    </TableRow>
+  );
+});
+
 function FunzionamentoSection({ formik }) {
   const { values, setFieldValue } = formik;
 
-  const handleStatusChange = (dispositivo, status) => {
+  const handleStatusChange = useCallback((dispositivo, status) => {
     setFieldValue(`elettrodomestici.${dispositivo}.status`, status);
     // Clear problem description if status is not "no"
     if (status !== 'no') {
       setFieldValue(`elettrodomestici.${dispositivo}.problema`, '');
     }
-  };
+  }, [setFieldValue]);
 
-  const handleProblemChange = (dispositivo, problema) => {
+  const handleProblemChange = useCallback((dispositivo, problema) => {
     setFieldValue(`elettrodomestici.${dispositivo}.problema`, problema);
-  };
+  }, [setFieldValue]);
 
-  const getStatusValue = (dispositivo) => {
+  const getStatusValue = useCallback((dispositivo) => {
     return values.elettrodomestici?.[dispositivo]?.status || '';
-  };
+  }, [values.elettrodomestici]);
 
-  const getProblemValue = (dispositivo) => {
+  const getProblemValue = useCallback((dispositivo) => {
     return values.elettrodomestici?.[dispositivo]?.problema || '';
-  };
+  }, [values.elettrodomestici]);
 
   return (
     <Box>
@@ -100,61 +159,15 @@ function FunzionamentoSection({ formik }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {elettrodomestici.map((dispositivo, index) => (
-                <TableRow 
-                  key={dispositivo} 
-                  sx={{ 
-                    '&:nth-of-type(odd)': { bgcolor: 'action.hover' },
-                    '&:hover': { bgcolor: 'action.selected' }
-                  }}
-                >
-                  <TableCell component="th" scope="row">
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {dispositivo}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Radio
-                      checked={getStatusValue(dispositivo) === 'si'}
-                      onChange={() => handleStatusChange(dispositivo, 'si')}
-                      value="si"
-                      name={`${dispositivo}_status`}
-                      color="success"
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Radio
-                      checked={getStatusValue(dispositivo) === 'no'}
-                      onChange={() => handleStatusChange(dispositivo, 'no')}
-                      value="no"
-                      name={`${dispositivo}_status`}
-                      color="error"
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Radio
-                      checked={getStatusValue(dispositivo) === 'na'}
-                      onChange={() => handleStatusChange(dispositivo, 'na')}
-                      value="na"
-                      name={`${dispositivo}_status`}
-                      color="default"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {getStatusValue(dispositivo) === 'no' && (
-                      <TextField
-                        fullWidth
-                        size="small"
-                        placeholder="Descrivi il problema..."
-                        value={getProblemValue(dispositivo)}
-                        onChange={(e) => handleProblemChange(dispositivo, e.target.value)}
-                        multiline
-                        maxRows={2}
-                        sx={{ minWidth: 200 }}
-                      />
-                    )}
-                  </TableCell>
-                </TableRow>
+              {elettrodomestici.map((dispositivo) => (
+                <ElettrodomesticoRow
+                  key={dispositivo}
+                  dispositivo={dispositivo}
+                  status={getStatusValue(dispositivo)}
+                  problema={getProblemValue(dispositivo)}
+                  onStatusChange={handleStatusChange}
+                  onProblemChange={handleProblemChange}
+                />
               ))}
             </TableBody>
           </Table>
