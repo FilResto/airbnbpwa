@@ -1,25 +1,54 @@
+// Import dinamico per evitare problemi con import.meta.env
+let ApiService = null;
+
 // Service per gestire il salvataggio dei dati del form
 class FormService {
   constructor() {
     this.storageKey = 'airbnb_feedback_forms';
+    this.useDatabase = true; // Database Supabase configurato
   }
 
-  // Salva un nuovo form
-  saveForm(formData) {
+  // Salva un nuovo form (database + localStorage come backup)
+  async saveForm(formData) {
+    let databaseSuccess = false;
+    
+    // Prova prima con il database se abilitato
+    if (this.useDatabase) {
+      try {
+        // Import dinamico di SupabaseService
+        const { default: SupabaseService } = await import('./supabaseService');
+        
+        const result = await SupabaseService.saveForm(formData);
+        if (result.success) {
+          databaseSuccess = true;
+          console.log('Form salvato nel database con successo');
+        }
+      } catch (error) {
+        console.warn('Fallback a localStorage:', error);
+      }
+    }
+    
+    // Salva sempre in localStorage come backup
     try {
       const existingForms = this.getAllForms();
       const newForm = {
         id: this.generateId(),
         timestamp: new Date().toISOString(),
         data: formData,
-        status: 'completed'
+        status: 'completed',
+        savedToDatabase: databaseSuccess
       };
       
       existingForms.push(newForm);
       localStorage.setItem(this.storageKey, JSON.stringify(existingForms));
       
-      console.log('Form salvato con successo:', newForm);
-      return { success: true, formId: newForm.id };
+      console.log('Form salvato localmente:', newForm);
+      return { 
+        success: true, 
+        formId: newForm.id,
+        savedToDatabase: databaseSuccess,
+        message: databaseSuccess ? 'Salvato in database e localmente' : 'Salvato solo localmente'
+      };
     } catch (error) {
       console.error('Errore nel salvataggio del form:', error);
       return { success: false, error: error.message };
@@ -94,8 +123,15 @@ class FormService {
       'Data Invio',
       'Pulizia Complessiva',
       'Aree Meno Pulite',
+      'Aree Meno Pulite Altro',
       'Lenzuola Pulite',
+      'Lenzuola Dettagli',
       'Alloggio Ordinato',
+      'Alloggio Dettagli',
+      'Elettrodomestici Funzionanti',
+      'Elettrodomestici Problematici',
+      'Elettrodomestici Non Presenti',
+      'Dettagli Problemi Elettrodomestici',
       'NPS Score',
       'Motivo NPS',
       'Valutazione Complessiva',
@@ -108,13 +144,42 @@ class FormService {
 
     const rows = forms.map(form => {
       const data = form.data;
+      
+      // Elabora dati elettrodomestici
+      const elettrodomestici = data.elettrodomestici || {};
+      const funzionanti = [];
+      const problematici = [];
+      const nonPresenti = [];
+      const dettagliProblemi = [];
+      
+      Object.keys(elettrodomestici).forEach(dispositivo => {
+        const info = elettrodomestici[dispositivo];
+        if (info.status === 'si') {
+          funzionanti.push(dispositivo);
+        } else if (info.status === 'no') {
+          problematici.push(dispositivo);
+          if (info.problema) {
+            dettagliProblemi.push(`${dispositivo}: ${info.problema}`);
+          }
+        } else if (info.status === 'na') {
+          nonPresenti.push(dispositivo);
+        }
+      });
+      
       return [
         form.id,
         new Date(form.timestamp).toLocaleString('it-IT'),
         data.pulizia_complessiva || '',
         Array.isArray(data.aree_meno_pulite) ? data.aree_meno_pulite.join('; ') : '',
+        data.aree_meno_pulite_altro || '',
         data.lenzuola_pulite || '',
+        data.lenzuola_dettagli || '',
         data.alloggio_ordinato || '',
+        data.alloggio_dettagli || '',
+        funzionanti.join('; '),
+        problematici.join('; '),
+        nonPresenti.join('; '),
+        dettagliProblemi.join(' | '),
         data.nps_score || '',
         data.nps_motivo || '',
         data.valutazione_complessiva || '',

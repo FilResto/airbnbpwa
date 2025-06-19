@@ -36,10 +36,24 @@ function AdminPanel() {
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [dbStatus, setDbStatus] = useState('checking');
 
   useEffect(() => {
     loadData();
+    checkDatabaseStatus();
   }, []);
+
+  const checkDatabaseStatus = async () => {
+    try {
+      // Import dinamico di SupabaseService
+      const { default: SupabaseService } = await import('../services/supabaseService');
+      const result = await SupabaseService.healthCheck();
+      setDbStatus(result.success ? 'connected' : 'disconnected');
+    } catch (error) {
+      console.warn('Errore nel controllo database:', error);
+      setDbStatus('disconnected');
+    }
+  };
 
   const loadData = () => {
     setStats(FormService.getFormStats());
@@ -97,10 +111,21 @@ function AdminPanel() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-        <Assessment sx={{ mr: 2 }} />
-        Pannello Amministrativo - Feedback Airbnb
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4" sx={{ display: 'flex', alignItems: 'center' }}>
+          <Assessment sx={{ mr: 2 }} />
+          Pannello Amministrativo - Feedback Airbnb
+        </Typography>
+        
+        <Chip 
+          label={dbStatus === 'connected' ? 'Database Connesso' : 
+                dbStatus === 'disconnected' ? 'Solo localStorage' : 'Verificando...'}
+          color={dbStatus === 'connected' ? 'success' : 
+                 dbStatus === 'disconnected' ? 'warning' : 'default'}
+          variant="outlined"
+          size="small"
+        />
+      </Box>
 
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>

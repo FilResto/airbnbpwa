@@ -118,21 +118,42 @@ function FormWizard() {
     try {
       console.log('Form submitted:', values);
       
-      // Salva i dati localmente
-      const saveResult = FormService.saveForm(values);
+      // Salva i dati localmente e nel database
+      const saveResult = await FormService.saveForm(values);
+      console.log('SaveResult:', saveResult);
       
       if (saveResult.success) {
-        // Simula invio al server (opzionale)
-        await FormService.sendToServer(values);
+        try {
+          // Simula invio al server (opzionale)
+          const serverResult = await FormService.sendToServer(values);
+          console.log('Server result:', serverResult);
+        } catch (serverError) {
+          console.warn('Server communication failed, but data is saved:', serverError);
+          // Non blocchiamo il flusso se il server fallisce
+        }
+        
+        // Mostra messaggio di successo specifico
+        if (saveResult.savedToDatabase) {
+          console.log('✅ Form salvato con successo nel database e localmente');
+        } else {
+          console.log('⚠️ Form salvato solo localmente (database non disponibile)');
+        }
         
         setSubmitSuccess(true);
         handleNext();
       } else {
+        console.error('Save failed:', saveResult.error);
         throw new Error(saveResult.error);
       }
     } catch (error) {
       console.error('Submission error:', error);
-      alert('Errore nel salvataggio del questionario. I dati sono stati salvati localmente.');
+      
+      // Mostra un messaggio più specifico in base al tipo di errore
+      if (error.message && error.message !== 'undefined') {
+        alert(`Errore: ${error.message}`);
+      } else {
+        alert('Errore nel salvataggio del questionario. I dati sono stati salvati localmente.');
+      }
     } finally {
       setIsSubmitting(false);
       setSubmitting(false);

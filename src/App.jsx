@@ -52,7 +52,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Container maxWidth="md" sx={{ py: 4 }}>
+        <Container maxWidth="md" sx={{ py: 4, px: { xs: 2, sm: 3 }, mx: 'auto' }}>
           <Routes>
             <Route path="/" element={<FormWizard />} />
             <Route path="/sezione/:step" element={<FormWizard />} />
