@@ -32,8 +32,8 @@ function Login({ onLogin }) {
 
     try {
       // Import dinamico di SupabaseService
-      const { default: SupabaseService } = await import('../services/supabaseService');
-      const supabaseService = new SupabaseService();
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
       
       const result = await supabaseService.signIn(credentials.email, credentials.password);
       

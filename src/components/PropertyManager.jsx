@@ -60,9 +60,9 @@ function PropertyManager({ onLogout, user }) {
       
       // Import dinamico di SupabaseService
       const { default: SupabaseServiceModule } = await import('../services/supabaseService');
-      SupabaseService = SupabaseServiceModule;
+      const supabaseService = new SupabaseServiceModule();
       
-      const result = await SupabaseService.getAllProperties();
+      const result = await supabaseService.getAllProperties();
       console.log('📊 Result getAllProperties:', result);
       
       if (result.success) {
@@ -85,7 +85,9 @@ function PropertyManager({ onLogout, user }) {
     }
 
     try {
-      const result = await SupabaseService.createProperty(newProperty);
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
+      const result = await supabaseService.createProperty(newProperty);
       if (result.success) {
         setOpenDialog(false);
         setNewProperty({ name: '', description: '' });
@@ -106,7 +108,9 @@ function PropertyManager({ onLogout, user }) {
     }
 
     try {
-      const result = await SupabaseService.deleteProperty(propertyId);
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
+      const result = await supabaseService.deleteProperty(propertyId);
       if (result.success) {
         loadProperties(); // Ricarica la lista
         setError(null);

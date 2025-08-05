@@ -47,8 +47,9 @@ function AdminPanel({ onLogout, user }) {
   const checkDatabaseStatus = async () => {
     try {
       // Import dinamico di SupabaseService
-      const { default: SupabaseService } = await import('../services/supabaseService');
-      const result = await SupabaseService.healthCheck();
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
+      const result = await supabaseService.healthCheck();
       setDbStatus(result.success ? 'connected' : 'disconnected');
     } catch (error) {
       console.warn('Errore nel controllo database:', error);
@@ -59,11 +60,12 @@ function AdminPanel({ onLogout, user }) {
   const loadData = async () => {
     try {
       // Import dinamico di SupabaseService
-      const { default: SupabaseService } = await import('../services/supabaseService');
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
       
       // Carica dati da Supabase
-      const formsResult = await SupabaseService.getAllForms();
-      const statsResult = await SupabaseService.getStats();
+      const formsResult = await supabaseService.getAllForms();
+      const statsResult = await supabaseService.getStats();
       
       if (formsResult.success) {
         setForms(formsResult.data);
@@ -87,8 +89,9 @@ function AdminPanel({ onLogout, user }) {
 
   const handleExportCSV = async () => {
     try {
-      const { default: SupabaseService } = await import('../services/supabaseService');
-      const result = await SupabaseService.exportCSV();
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
+      const result = await supabaseService.exportCSV();
       
       if (result.success) {
         const blob = new Blob([result.data], { type: 'text/csv;charset=utf-8;' });
@@ -111,9 +114,10 @@ function AdminPanel({ onLogout, user }) {
 
   const handleClearAll = async () => {
     if (window.confirm('Sei sicuro di voler eliminare tutti i questionari? Questa azione non può essere annullata.')) {
-      try {
-        const { default: SupabaseService } = await import('../services/supabaseService');
-        const result = await SupabaseService.clearAllForms();
+          try {
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
+      const result = await supabaseService.clearAllForms();
         
         if (result.success) {
           loadData();

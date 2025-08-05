@@ -70,9 +70,9 @@ function AmenityConfigurator({ propertyId }) {
     try {
       // Import dinamico di SupabaseService
       const { default: SupabaseServiceModule } = await import('../services/supabaseService');
-      SupabaseService = SupabaseServiceModule;
+      const supabaseService = new SupabaseServiceModule();
       
-      const result = await SupabaseService.getPropertyAmenities(propertyId);
+      const result = await supabaseService.getPropertyAmenities(propertyId);
       if (result.success) {
         // Trasforma la lista di amenità in array di ID
         const amenityIds = result.data.map(amenity => amenity.amenity_name);
@@ -102,7 +102,9 @@ function AmenityConfigurator({ propertyId }) {
     setSuccess(false);
     
     try {
-      const result = await SupabaseService.savePropertyAmenities(propertyId, selectedAmenities);
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
+      const result = await supabaseService.savePropertyAmenities(propertyId, selectedAmenities);
       if (result.success) {
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000); // Nasconde il messaggio dopo 3 secondi

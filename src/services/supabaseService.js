@@ -83,7 +83,7 @@ class SupabaseService {
   // Test connessione
   async healthCheck() {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('feedback')
         .select('count', { count: 'exact', head: true });
       
@@ -98,7 +98,7 @@ class SupabaseService {
   // Salva un questionario
   async saveForm(formData) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('feedback')
         .insert({
           form_data: formData,
@@ -120,7 +120,7 @@ class SupabaseService {
   // Recupera tutti i form con i dati delle proprietà
   async getAllForms() {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('feedback')
         .select(`
           *,
@@ -155,7 +155,7 @@ class SupabaseService {
   // Recupera statistiche
   async getStats() {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('feedback')
         .select('form_data, created_at');
 
@@ -309,7 +309,7 @@ class SupabaseService {
   // Recupera tutte le proprietà
   async getAllProperties() {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('properties')
         .select('*')
         .order('name', { ascending: true });
@@ -326,7 +326,7 @@ class SupabaseService {
   // Crea una nuova proprietà
   async createProperty(propertyData) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('properties')
         .insert({
           name: propertyData.name,
@@ -347,7 +347,7 @@ class SupabaseService {
   // Elimina una proprietà
   async deleteProperty(propertyId) {
     try {
-      const { error } = await supabase
+      const { error } = await this.supabase
         .from('properties')
         .delete()
         .eq('id', propertyId);
@@ -365,7 +365,7 @@ class SupabaseService {
   // Recupera amenità di una proprietà specifica
   async fetchPropertyAmenities(propertyId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('property_amenities')
         .select('amenity_name')
         .eq('property_id', propertyId)
@@ -384,7 +384,7 @@ class SupabaseService {
   // Salva form con property_id specifico
   async saveFormWithPropertyId(formData, propertyId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('feedback')
         .insert({
           form_data: formData,
@@ -406,7 +406,7 @@ class SupabaseService {
   // Recupera amenità di una proprietà specifica (per configuratore)
   async getPropertyAmenities(propertyId) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('property_amenities')
         .select('*')
         .eq('property_id', propertyId);
@@ -424,7 +424,7 @@ class SupabaseService {
   async savePropertyAmenities(propertyId, amenityIds) {
     try {
       // Prima elimina tutte le amenità esistenti per questa proprietà
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await this.supabase
         .from('property_amenities')
         .delete()
         .eq('property_id', propertyId);
@@ -439,7 +439,7 @@ class SupabaseService {
           is_present: true
         }));
 
-        const { data, error: insertError } = await supabase
+        const { data, error: insertError } = await this.supabase
           .from('property_amenities')
           .insert(amenitiesToInsert)
           .select();
@@ -459,7 +459,7 @@ class SupabaseService {
   // Elimina tutti i form
   async clearAllForms() {
     try {
-      const { error } = await supabase
+      const { error } = await this.supabase
         .from('feedback')
         .delete()
         .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all records

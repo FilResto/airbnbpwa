@@ -16,9 +16,10 @@ class FormService {
     if (this.useDatabase) {
       try {
         // Import dinamico di SupabaseService
-        const { default: SupabaseService } = await import('./supabaseService');
+        const { default: SupabaseServiceModule } = await import('./supabaseService');
+        const supabaseService = new SupabaseServiceModule();
         
-        const result = await SupabaseService.saveForm(formData);
+        const result = await supabaseService.saveForm(formData);
         if (result.success) {
           databaseSuccess = true;
           console.log('Form salvato nel database con successo');
@@ -225,9 +226,10 @@ class FormService {
   async fetchPropertyAmenities(propertyId) {
     try {
       // Import dinamico di SupabaseService
-      const { default: SupabaseService } = await import('./supabaseService');
+      const { default: SupabaseServiceModule } = await import('./supabaseService');
+      const supabaseService = new SupabaseServiceModule();
       
-      const result = await SupabaseService.fetchPropertyAmenities(propertyId);
+      const result = await supabaseService.fetchPropertyAmenities(propertyId);
       if (result.success) {
         console.log('Amenità recuperate:', result.data);
         return { success: true, data: result.data };
@@ -249,9 +251,10 @@ class FormService {
     if (this.useDatabase) {
       try {
         // Import dinamico di SupabaseService
-        const { default: SupabaseService } = await import('./supabaseService');
+        const { default: SupabaseServiceModule } = await import('./supabaseService');
+        const supabaseService = new SupabaseServiceModule();
         
-        const result = await SupabaseService.saveFormWithPropertyId(formData, propertyId);
+        const result = await supabaseService.saveFormWithPropertyId(formData, propertyId);
         if (result.success) {
           databaseSuccess = true;
           console.log('Form salvato nel database con property_id:', propertyId);

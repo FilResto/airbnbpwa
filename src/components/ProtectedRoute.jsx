@@ -13,8 +13,8 @@ function ProtectedRoute({ children }) {
 
   const checkAuthStatus = async () => {
     try {
-      const { default: SupabaseService } = await import('../services/supabaseService');
-      const supabaseService = new SupabaseService();
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
       
       const sessionResult = await supabaseService.getSession();
       const userResult = await supabaseService.getCurrentUser();
@@ -37,8 +37,8 @@ function ProtectedRoute({ children }) {
 
   const setupAuthListener = async () => {
     try {
-      const { default: SupabaseService } = await import('../services/supabaseService');
-      const supabaseService = new SupabaseService();
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
       
       // Ascolta i cambiamenti di stato dell'autenticazione
       const { data: { subscription } } = supabaseService.onAuthStateChange(
@@ -70,8 +70,8 @@ function ProtectedRoute({ children }) {
 
   const handleLogout = async () => {
     try {
-      const { default: SupabaseService } = await import('../services/supabaseService');
-      const supabaseService = new SupabaseService();
+      const { default: SupabaseServiceModule } = await import('../services/supabaseService');
+      const supabaseService = new SupabaseServiceModule();
       
       const result = await supabaseService.signOut();
       if (result.success) {
