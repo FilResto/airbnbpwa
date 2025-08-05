@@ -74,12 +74,27 @@ const initialValues = {
   contatto: '',
 };
 
-function FormWizard() {
+function FormWizard({ amenities = [] }) {
   const { step } = useParams();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [propertyId, setPropertyId] = useState(null);
+
+  useEffect(() => {
+    // Leggi property_id dall'URL all'inizio e salvalo
+    const urlParams = new URLSearchParams(window.location.search);
+    const casaParam = urlParams.get('casa');
+    console.log('URL params:', window.location.search);
+    console.log('Casa param:', casaParam);
+    if (casaParam) {
+      setPropertyId(casaParam);
+      console.log('Property ID salvato:', casaParam);
+    } else {
+      console.log('Nessun property_id trovato nell\'URL');
+    }
+  }, []);
 
   useEffect(() => {
     if (step) {
@@ -117,10 +132,18 @@ function FormWizard() {
     setIsSubmitting(true);
     try {
       console.log('Form submitted:', values);
+      console.log('Property ID from state:', propertyId);
       
-      // Salva i dati localmente e nel database
-      const saveResult = await FormService.saveForm(values);
-      console.log('SaveResult:', saveResult);
+      let saveResult;
+      if (propertyId) {
+        // Salva con property_id se disponibile
+        saveResult = await FormService.saveWithPropertyId(values, propertyId);
+        console.log('SaveResult with property_id:', saveResult);
+      } else {
+        // Salva senza property_id (fallback)
+        saveResult = await FormService.saveForm(values);
+        console.log('SaveResult without property_id:', saveResult);
+      }
       
       if (saveResult.success) {
         try {
@@ -167,7 +190,7 @@ function FormWizard() {
       case 1:
         return <PuliziaSection formik={formikProps} />;
       case 2:
-        return <FunzionamentoSection formik={formikProps} />;
+        return <FunzionamentoSection formik={formikProps} amenities={amenities} />;
       case 3:
         return <ValutazioniSection formik={formikProps} />;
       case 4:

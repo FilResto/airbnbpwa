@@ -220,6 +220,75 @@ class FormService {
       }, 1000);
     });
   }
+
+  // Recupera amenità di una proprietà specifica
+  async fetchPropertyAmenities(propertyId) {
+    try {
+      // Import dinamico di SupabaseService
+      const { default: SupabaseService } = await import('./supabaseService');
+      
+      const result = await SupabaseService.fetchPropertyAmenities(propertyId);
+      if (result.success) {
+        console.log('Amenità recuperate:', result.data);
+        return { success: true, data: result.data };
+      } else {
+        console.warn('Errore nel recupero amenità:', result.error);
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('Errore nel fetch amenità:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Salva form con property_id specifico
+  async saveWithPropertyId(formData, propertyId) {
+    let databaseSuccess = false;
+    
+    // Prova prima con il database se abilitato
+    if (this.useDatabase) {
+      try {
+        // Import dinamico di SupabaseService
+        const { default: SupabaseService } = await import('./supabaseService');
+        
+        const result = await SupabaseService.saveFormWithPropertyId(formData, propertyId);
+        if (result.success) {
+          databaseSuccess = true;
+          console.log('Form salvato nel database con property_id:', propertyId);
+        }
+      } catch (error) {
+        console.warn('Fallback a localStorage:', error);
+      }
+    }
+    
+    // Salva sempre in localStorage come backup
+    try {
+      const existingForms = this.getAllForms();
+      const newForm = {
+        id: this.generateId(),
+        timestamp: new Date().toISOString(),
+        data: formData,
+        propertyId: propertyId, // Aggiungi property_id anche in localStorage
+        status: 'completed',
+        savedToDatabase: databaseSuccess
+      };
+      
+      existingForms.push(newForm);
+      localStorage.setItem(this.storageKey, JSON.stringify(existingForms));
+      
+      console.log('Form salvato localmente con property_id:', newForm);
+      return { 
+        success: true, 
+        formId: newForm.id,
+        propertyId: propertyId,
+        savedToDatabase: databaseSuccess,
+        message: databaseSuccess ? 'Salvato in database e localmente' : 'Salvato solo localmente'
+      };
+    } catch (error) {
+      console.error('Errore nel salvataggio del form:', error);
+      return { success: false, error: error.message };
+    }
+  }
 }
 
 // Esporta un'istanza singleton del servizio

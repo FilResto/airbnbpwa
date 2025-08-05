@@ -17,28 +17,6 @@ import {
 } from '@mui/material';
 import { Build } from '@mui/icons-material';
 
-const elettrodomestici = [
-  'Frigorifero / Congelatore',
-  'Forno / Piano cottura',
-  'Microonde',
-  'Lavastoviglie',
-  'Macchina da caffè',
-  'Bollitore elettrico',
-  'Tostapane (non c\'è quasi mai)',
-  'Lavatrice',
-  'Asciugatrice (o funzione asciugatura)',
-  'Ferro da stiro (non c\'è quasi mai)',
-  'Aspirapolvere / Scopa elettrica',
-  'Aria condizionata',
-  'Riscaldamento',
-  'Acqua calda (doccia/lavandini)',
-  'Wi-Fi / Connessione Internet',
-  'TV',
-  'Telecomando TV',
-  'Serratura / Chiavi / Codice ingresso',
-  'Luci / Lampadine',
-];
-
 // Componente memoizzato per ogni riga della tabella
 const ElettrodomesticoRow = memo(({ dispositivo, status, problema, onStatusChange, onProblemChange }) => {
   return (
@@ -98,7 +76,7 @@ const ElettrodomesticoRow = memo(({ dispositivo, status, problema, onStatusChang
   );
 });
 
-function FunzionamentoSection({ formik }) {
+function FunzionamentoSection({ formik, amenities = [] }) {
   const { values, setFieldValue } = formik;
 
   const handleStatusChange = useCallback((dispositivo, status) => {
@@ -159,7 +137,7 @@ function FunzionamentoSection({ formik }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {elettrodomestici.map((dispositivo) => (
+              {amenities.map((dispositivo) => (
                 <ElettrodomesticoRow
                   key={dispositivo}
                   dispositivo={dispositivo}

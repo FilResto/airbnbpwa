@@ -28,11 +28,11 @@ class SupabaseService {
   async saveForm(formData) {
     try {
       const { data, error } = await supabase
-        .from('feedback_forms')
+        .from('feedback')
         .insert({
           form_data: formData,
-          timestamp: new Date().toISOString(),
-          status: 'completed'
+          created_at: new Date().toISOString(),
+          property_id: null // Permette di salvare senza property_id
         })
         .select();
 
@@ -46,22 +46,32 @@ class SupabaseService {
     }
   }
 
-  // Recupera tutti i form
+  // Recupera tutti i form con i dati delle proprietà
   async getAllForms() {
     try {
       const { data, error } = await supabase
-        .from('feedback_forms')
-        .select('*')
-        .order('timestamp', { ascending: false });
+        .from('feedback')
+        .select(`
+          *,
+          properties:property_id (
+            id,
+            name,
+            description
+          )
+        `)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       
       // Trasforma i dati nel formato aspettato dall'app
       const transformedData = data.map(row => ({
         id: row.id,
-        timestamp: row.timestamp,
+        timestamp: row.created_at,
         data: row.form_data,
-        status: row.status
+        property_id: row.property_id,
+        property_name: row.properties?.name || 'Proprietà non specificata',
+        property_description: row.properties?.description || '',
+        status: 'completed'
       }));
 
       return { success: true, data: transformedData };
@@ -75,8 +85,8 @@ class SupabaseService {
   async getStats() {
     try {
       const { data, error } = await supabase
-        .from('feedback_forms')
-        .select('form_data, timestamp');
+        .from('feedback')
+        .select('form_data, created_at');
 
       if (error) throw error;
 
@@ -120,7 +130,7 @@ class SupabaseService {
           totalForms: data.length,
           averageRating: ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : 0,
           averageNPS: npsCount > 0 ? (totalNPS / npsCount).toFixed(1) : 0,
-          lastSubmission: data[0]?.timestamp
+          lastSubmission: data[0]?.created_at
         }
       };
     } catch (error) {
@@ -221,6 +231,173 @@ class SupabaseService {
       return { success: true, data: csvContent };
     } catch (error) {
       console.error('Errore export CSV Supabase:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Recupera tutte le proprietà
+  async getAllProperties() {
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      
+      return { success: true, data: data || [] };
+    } catch (error) {
+      console.error('Errore recupero proprietà da Supabase:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Crea una nuova proprietà
+  async createProperty(propertyData) {
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .insert({
+          name: propertyData.name,
+          description: propertyData.description || null
+        })
+        .select();
+
+      if (error) throw error;
+      
+      console.log('Proprietà creata in Supabase:', data);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error('Errore creazione proprietà in Supabase:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Elimina una proprietà
+  async deleteProperty(propertyId) {
+    try {
+      const { error } = await supabase
+        .from('properties')
+        .delete()
+        .eq('id', propertyId);
+
+      if (error) throw error;
+      
+      console.log('Proprietà eliminata da Supabase:', propertyId);
+      return { success: true };
+    } catch (error) {
+      console.error('Errore eliminazione proprietà da Supabase:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Recupera amenità di una proprietà specifica
+  async fetchPropertyAmenities(propertyId) {
+    try {
+      const { data, error } = await supabase
+        .from('property_amenities')
+        .select('amenity_name')
+        .eq('property_id', propertyId)
+        .eq('is_present', true);
+
+      if (error) throw error;
+      
+      const amenities = data.map(row => row.amenity_name);
+      return { success: true, data: amenities };
+    } catch (error) {
+      console.error('Errore recupero amenità da Supabase:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Salva form con property_id specifico
+  async saveFormWithPropertyId(formData, propertyId) {
+    try {
+      const { data, error } = await supabase
+        .from('feedback')
+        .insert({
+          form_data: formData,
+          property_id: propertyId,
+          created_at: new Date().toISOString()
+        })
+        .select();
+
+      if (error) throw error;
+      
+      console.log('Form salvato in Supabase con property_id:', data);
+      return { success: true, id: data[0].id };
+    } catch (error) {
+      console.error('Errore salvataggio Supabase con property_id:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Recupera amenità di una proprietà specifica (per configuratore)
+  async getPropertyAmenities(propertyId) {
+    try {
+      const { data, error } = await supabase
+        .from('property_amenities')
+        .select('*')
+        .eq('property_id', propertyId);
+
+      if (error) throw error;
+      
+      return { success: true, data: data || [] };
+    } catch (error) {
+      console.error('Errore recupero amenità proprietà da Supabase:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Salva amenità di una proprietà
+  async savePropertyAmenities(propertyId, amenityIds) {
+    try {
+      // Prima elimina tutte le amenità esistenti per questa proprietà
+      const { error: deleteError } = await supabase
+        .from('property_amenities')
+        .delete()
+        .eq('property_id', propertyId);
+
+      if (deleteError) throw deleteError;
+
+      // Poi inserisce le nuove amenità selezionate
+      if (amenityIds.length > 0) {
+        const amenitiesToInsert = amenityIds.map(amenityId => ({
+          property_id: propertyId,
+          amenity_name: amenityId,
+          is_present: true
+        }));
+
+        const { data, error: insertError } = await supabase
+          .from('property_amenities')
+          .insert(amenitiesToInsert)
+          .select();
+
+        if (insertError) throw insertError;
+        
+        console.log('Amenità salvate in Supabase:', data);
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Errore salvataggio amenità in Supabase:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Elimina tutti i form
+  async clearAllForms() {
+    try {
+      const { error } = await supabase
+        .from('feedback')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all records
+
+      if (error) throw error;
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Errore eliminazione form:', error);
       return { success: false, error: error.message };
     }
   }

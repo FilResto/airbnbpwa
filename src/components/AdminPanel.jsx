@@ -55,33 +55,74 @@ function AdminPanel() {
     }
   };
 
-  const loadData = () => {
-    setStats(FormService.getFormStats());
-    setForms(FormService.getAllForms());
-  };
-
-  const handleExportCSV = () => {
-    const csvData = FormService.exportToCSV();
-    if (!csvData) {
-      alert('Nessun dato da esportare');
-      return;
+  const loadData = async () => {
+    try {
+      // Import dinamico di SupabaseService
+      const { default: SupabaseService } = await import('../services/supabaseService');
+      
+      // Carica dati da Supabase
+      const formsResult = await SupabaseService.getAllForms();
+      const statsResult = await SupabaseService.getStats();
+      
+      if (formsResult.success) {
+        setForms(formsResult.data);
+      } else {
+        console.error('Errore caricamento forms:', formsResult.error);
+        setForms([]);
+      }
+      
+      if (statsResult.success) {
+        setStats(statsResult.data);
+      } else {
+        console.error('Errore caricamento stats:', statsResult.error);
+        setStats(null);
+      }
+    } catch (error) {
+      console.error('Errore nel caricamento dati:', error);
+      setForms([]);
+      setStats(null);
     }
-
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `feedback_airbnb_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
-  const handleClearAll = () => {
+  const handleExportCSV = async () => {
+    try {
+      const { default: SupabaseService } = await import('../services/supabaseService');
+      const result = await SupabaseService.exportCSV();
+      
+      if (result.success) {
+        const blob = new Blob([result.data], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `feedback_airbnb_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        alert('Errore nell\'esportazione: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Errore export CSV:', error);
+      alert('Errore nell\'esportazione dei dati');
+    }
+  };
+
+  const handleClearAll = async () => {
     if (window.confirm('Sei sicuro di voler eliminare tutti i questionari? Questa azione non può essere annullata.')) {
-      FormService.clearAllForms();
-      loadData();
+      try {
+        const { default: SupabaseService } = await import('../services/supabaseService');
+        const result = await SupabaseService.clearAllForms();
+        
+        if (result.success) {
+          loadData();
+        } else {
+          alert('Errore nell\'eliminazione: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Errore eliminazione:', error);
+        alert('Errore nell\'eliminazione dei dati');
+      }
     }
   };
 
@@ -234,6 +275,7 @@ function AdminPanel() {
                 <TableHead>
                   <TableRow>
                     <TableCell>Data</TableCell>
+                    <TableCell>Proprietà</TableCell>
                     <TableCell>Pulizia</TableCell>
                     <TableCell>NPS</TableCell>
                     <TableCell>Valutazione</TableCell>
@@ -246,6 +288,18 @@ function AdminPanel() {
                     <TableRow key={form.id}>
                       <TableCell>
                         {formatDate(form.timestamp)}
+                      </TableCell>
+                      <TableCell>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {form.property_name}
+                          </Typography>
+                          {form.property_id && (
+                            <Typography variant="caption" color="text.secondary">
+                              ID: {form.property_id.slice(0, 8)}...
+                            </Typography>
+                          )}
+                        </Box>
                       </TableCell>
                       <TableCell>
                         {form.data.pulizia_complessiva ? (
@@ -309,6 +363,11 @@ function AdminPanel() {
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>
           Dettagli Questionario - {selectedForm && formatDate(selectedForm.timestamp)}
+          {selectedForm?.property_name && (
+            <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 1 }}>
+              Proprietà: {selectedForm.property_name}
+            </Typography>
+          )}
         </DialogTitle>
         <DialogContent>
           {selectedForm && (
