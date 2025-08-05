@@ -28,13 +28,14 @@ import {
   Edit,
   Delete,
   Visibility,
+  Logout,
 } from '@mui/icons-material';
 import AmenityConfigurator from './AmenityConfigurator';
 
 // Import dinamico di SupabaseService
 let SupabaseService = null;
 
-function PropertyManager() {
+function PropertyManager({ onLogout, user }) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
@@ -137,13 +138,33 @@ function PropertyManager() {
           Gestione Proprietà
         </Typography>
         
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => setOpenDialog(true)}
-        >
-          Nuova Proprietà
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setOpenDialog(true)}
+          >
+            Nuova Proprietà
+          </Button>
+          {user && (
+            <Chip 
+              label={`Admin: ${user.email}`}
+              color="primary"
+              variant="outlined"
+              size="small"
+            />
+          )}
+          {onLogout && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<Logout />}
+              onClick={onLogout}
+            >
+              Logout
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {/* Error Alert */}

@@ -28,10 +28,11 @@ import {
   TrendingUp,
   Delete,
   Visibility,
+  Logout,
 } from '@mui/icons-material';
 import FormService from '../services/formService';
 
-function AdminPanel() {
+function AdminPanel({ onLogout, user }) {
   const [stats, setStats] = useState(null);
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState(null);
@@ -158,14 +159,35 @@ function AdminPanel() {
           Pannello Amministrativo - Feedback Airbnb
         </Typography>
         
-        <Chip 
-          label={dbStatus === 'connected' ? 'Database Connesso' : 
-                dbStatus === 'disconnected' ? 'Solo localStorage' : 'Verificando...'}
-          color={dbStatus === 'connected' ? 'success' : 
-                 dbStatus === 'disconnected' ? 'warning' : 'default'}
-          variant="outlined"
-          size="small"
-        />
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Chip 
+            label={dbStatus === 'connected' ? 'Database Connesso' : 
+                  dbStatus === 'disconnected' ? 'Solo localStorage' : 'Verificando...'}
+            color={dbStatus === 'connected' ? 'success' : 
+                   dbStatus === 'disconnected' ? 'warning' : 'default'}
+            variant="outlined"
+            size="small"
+          />
+          {user && (
+            <Chip 
+              label={`Admin: ${user.email}`}
+              color="primary"
+              variant="outlined"
+              size="small"
+            />
+          )}
+          {onLogout && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<Logout />}
+              onClick={onLogout}
+              size="small"
+            >
+              Logout
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {/* Statistics Cards */}

@@ -19,7 +19,7 @@ if (supabaseUrl && supabaseKey) {
   
   // Test semplice di connessione
   supabase
-    .from('feedback_forms')
+    .from('feedback')
     .select('count', { count: 'exact', head: true })
     .then(({ data, error }) => {
       if (error) {

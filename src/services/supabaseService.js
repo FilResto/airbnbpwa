@@ -8,12 +8,83 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 class SupabaseService {
+  constructor() {
+    this.supabase = createClient(
+      import.meta.env.VITE_SUPABASE_URL,
+      import.meta.env.VITE_SUPABASE_ANON_KEY
+    );
+  }
+
+  // Authentication methods
+  async signIn(email, password) {
+    try {
+      const { data, error } = await this.supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      
+      return { success: true, data: data.user };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async signOut() {
+    try {
+      const { error } = await this.supabase.auth.signOut();
+      
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async getCurrentUser() {
+    try {
+      const { data: { user }, error } = await this.supabase.auth.getUser();
+      
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      
+      return { success: true, data: user };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async getSession() {
+    try {
+      const { data: { session }, error } = await this.supabase.auth.getSession();
+      
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      
+      return { success: true, data: session };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Listen to auth state changes
+  onAuthStateChange(callback) {
+    return this.supabase.auth.onAuthStateChange(callback);
+  }
   
   // Test connessione
   async healthCheck() {
     try {
       const { data, error } = await supabase
-        .from('feedback_forms')
+        .from('feedback')
         .select('count', { count: 'exact', head: true });
       
       if (error) throw error;
@@ -403,4 +474,4 @@ class SupabaseService {
   }
 }
 
-export default new SupabaseService(); 
+export default SupabaseService; 

@@ -5,6 +5,7 @@ import { CssBaseline, Container, Box, CircularProgress } from '@mui/material';
 import FormWizard from './components/FormWizard';
 import AdminPanel from './components/AdminPanel';
 import PropertyManager from './components/PropertyManager';
+import ProtectedRoute from './components/ProtectedRoute';
 import FormService from './services/formService';
 
 const theme = createTheme({
@@ -127,8 +128,16 @@ function App() {
               <Routes>
                 <Route path="/" element={<FormWizard amenities={amenities} />} />
                 <Route path="/sezione/:step" element={<FormWizard amenities={amenities} />} />
-                <Route path="/admin" element={<AdminPanel />} />
-                <Route path="/properties" element={<PropertyManager />} />
+                <Route path="/admin" element={
+                  <ProtectedRoute>
+                    <AdminPanel />
+                  </ProtectedRoute>
+                } />
+                <Route path="/properties" element={
+                  <ProtectedRoute>
+                    <PropertyManager />
+                  </ProtectedRoute>
+                } />
               </Routes>
             )}
           </Container>

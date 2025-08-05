@@ -68,10 +68,55 @@ CREATE POLICY "Enable insert for all users" ON feedback FOR INSERT WITH CHECK (t
 CREATE POLICY "Allow insert feedback" ON public.feedback_forms FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow read feedback" ON public.feedback_forms FOR SELECT USING (true);
 
+-- Rimuovi la tabella feedback_forms (non più necessaria)
+DROP TABLE IF EXISTS feedback_forms;
+
+-- Row Level Security (RLS) Policies
+-- Abilita RLS su tutte le tabelle
+ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
+ALTER TABLE properties ENABLE ROW LEVEL SECURITY;
+ALTER TABLE property_amenities ENABLE ROW LEVEL SECURITY;
+
+-- Policy per la tabella feedback (solo admin può leggere)
+CREATE POLICY "Admin can read all feedback" ON feedback
+    FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Policy per permettere inserimento feedback da utenti non autenticati
+CREATE POLICY "Anyone can insert feedback" ON feedback
+    FOR INSERT WITH CHECK (true);
+
+-- Policy per la tabella properties (solo admin può gestire)
+CREATE POLICY "Admin can manage properties" ON properties
+    FOR ALL USING (auth.role() = 'authenticated');
+
+-- Policy per la tabella property_amenities (solo admin può gestire)
+CREATE POLICY "Admin can manage property amenities" ON property_amenities
+    FOR ALL USING (auth.role() = 'authenticated');
+
+-- Funzione per verificare se l'utente è admin
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN auth.role() = 'authenticated';
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Aggiorna le policy per usare la funzione
+DROP POLICY IF EXISTS "Admin can read all feedback" ON feedback;
+CREATE POLICY "Admin can read all feedback" ON feedback
+    FOR SELECT USING (is_admin());
+
+DROP POLICY IF EXISTS "Admin can manage properties" ON properties;
+CREATE POLICY "Admin can manage properties" ON properties
+    FOR ALL USING (is_admin());
+
+DROP POLICY IF EXISTS "Admin can manage property amenities" ON property_amenities;
+CREATE POLICY "Admin can manage property amenities" ON property_amenities
+    FOR ALL USING (is_admin());
+
 -- Commenti per documentazione
 COMMENT ON TABLE properties IS 'Tabella delle proprietà Airbnb';
-COMMENT ON TABLE property_amenities IS 'Amenità disponibili per ogni proprietà';
-COMMENT ON TABLE feedback IS 'Feedback degli ospiti per ogni proprietà';
-COMMENT ON TABLE public.feedback_forms IS 'Tabella per salvare i questionari di feedback Airbnb';
-COMMENT ON COLUMN public.feedback_forms.form_data IS 'Dati del questionario in formato JSON';
-COMMENT ON COLUMN public.feedback_forms.status IS 'Stato del questionario: completed, draft, etc.'; 
+COMMENT ON TABLE feedback IS 'Tabella per salvare i questionari di feedback Airbnb';
+COMMENT ON TABLE property_amenities IS 'Tabella per le amenità delle proprietà';
+COMMENT ON COLUMN feedback.form_data IS 'Dati del questionario in formato JSON';
+COMMENT ON COLUMN feedback.property_id IS 'ID della proprietà associata al feedback'; 
