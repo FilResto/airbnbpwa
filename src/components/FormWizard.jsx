@@ -222,17 +222,61 @@ function FormWizard({ amenities = [] }) {
       {/* Progress Stepper */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Stepper activeStep={activeStep} alternativeLabel>
+          <Stepper 
+            activeStep={activeStep} 
+            alternativeLabel
+            sx={{
+              // Nascondi le etichette su mobile
+              '& .MuiStepLabel-label': {
+                display: { xs: 'none', sm: 'block' }
+              },
+              // Riduci lo spazio tra gli step su mobile
+              '& .MuiStep-root': {
+                padding: { xs: '0 8px', sm: '0 16px' }
+              }
+            }}
+          >
             {steps.map((label, index) => (
               <Step key={label} completed={index < activeStep}>
                 <StepLabel 
                   icon={index === steps.length - 1 && activeStep === steps.length - 1 ? <CheckCircle /> : undefined}
+                  sx={{
+                    // Mostra le etichette solo su schermi grandi
+                    '& .MuiStepLabel-label': {
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                      lineHeight: { xs: 1.2, sm: 1.4 }
+                    }
+                  }}
                 >
                   {label}
                 </StepLabel>
               </Step>
             ))}
           </Stepper>
+          
+          {/* Mostra le etichette degli step su mobile in formato compatto */}
+          <Box sx={{ 
+            display: { xs: 'flex', sm: 'none' }, 
+            justifyContent: 'space-between', 
+            mt: 2,
+            px: 1
+          }}>
+            {steps.map((label, index) => (
+              <Box 
+                key={label} 
+                sx={{ 
+                  textAlign: 'center',
+                  flex: 1,
+                  fontSize: '0.7rem',
+                  color: index <= activeStep ? 'primary.main' : 'text.secondary',
+                  fontWeight: index === activeStep ? 600 : 400
+                }}
+              >
+                {label}
+              </Box>
+            ))}
+          </Box>
+          
           <Box sx={{ mt: 2 }}>
             <LinearProgress 
               variant="determinate" 

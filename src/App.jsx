@@ -24,9 +24,20 @@ const theme = createTheme({
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
       fontWeight: 600,
+      fontSize: { xs: '1.5rem', sm: '2.125rem' },
     },
     h5: {
       fontWeight: 500,
+      fontSize: { xs: '1.25rem', sm: '1.5rem' },
+    },
+    h6: {
+      fontSize: { xs: '1.1rem', sm: '1.25rem' },
+    },
+    body1: {
+      fontSize: { xs: '0.875rem', sm: '1rem' },
+    },
+    body2: {
+      fontSize: { xs: '0.8rem', sm: '0.875rem' },
     },
   },
   components: {
@@ -36,6 +47,8 @@ const theme = createTheme({
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 600,
+          fontSize: { xs: '0.875rem', sm: '1rem' },
+          padding: { xs: '8px 16px', sm: '10px 20px' },
         },
       },
     },
@@ -44,6 +57,20 @@ const theme = createTheme({
         root: {
           borderRadius: 12,
           boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+        },
+      },
+    },
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          padding: { xs: '16px', sm: '24px' },
+        },
+      },
+    },
+    MuiStepper: {
+      styleOverrides: {
+        root: {
+          padding: { xs: '8px 0', sm: '16px 0' },
         },
       },
     },
@@ -115,9 +142,10 @@ function App() {
           <Container 
             maxWidth="sm" 
             sx={{ 
-              px: { xs: 2, sm: 3 },
+              px: { xs: 1, sm: 2, md: 3 },
               width: '100%',
-              maxWidth: { xs: '100%', sm: '1000px' }
+              maxWidth: { xs: '100%', sm: '600px', md: '800px' },
+              py: { xs: 2, sm: 4 }
             }}
           >
             {loadingAmenities ? (
