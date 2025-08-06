@@ -49,7 +49,7 @@ const validationSchemas = [
 ];
 
 const initialValues = {
-  // Sezione Pulizia
+  // Cleaning Section
   pulizia_complessiva: '',
   aree_meno_pulite: [],
   aree_meno_pulite_altro: '',
@@ -58,16 +58,16 @@ const initialValues = {
   alloggio_ordinato: '',
   alloggio_dettagli: '',
   
-  // Sezione Funzionamento
+  // Functionality Section
   elettrodomestici: {},
   
-  // Sezione Valutazioni
+  // Ratings Section
   nps_score: '',
   nps_motivo: '',
   valutazione_complessiva: '',
   tornare: '',
   
-  // Sezione Commenti
+  // Comments Section
   cosa_apprezzato: '',
   cosa_migliorare: '',
   ricontattare: '',
@@ -83,16 +83,16 @@ function FormWizard({ amenities = [] }) {
   const [propertyId, setPropertyId] = useState(null);
 
   useEffect(() => {
-    // Leggi property_id dall'URL all'inizio e salvalo
+    // Read property_id from URL at startup and save it
     const urlParams = new URLSearchParams(window.location.search);
     const casaParam = urlParams.get('casa');
     console.log('URL params:', window.location.search);
     console.log('Casa param:', casaParam);
     if (casaParam) {
       setPropertyId(casaParam);
-      console.log('Property ID salvato:', casaParam);
+      console.log('Property ID saved:', casaParam);
     } else {
-      console.log('Nessun property_id trovato nell\'URL');
+      console.log('No property_id found in URL');
     }
   }, []);
 
@@ -136,30 +136,30 @@ function FormWizard({ amenities = [] }) {
       
       let saveResult;
       if (propertyId) {
-        // Salva con property_id se disponibile
+        // Save with property_id if available
         saveResult = await FormService.saveWithPropertyId(values, propertyId);
         console.log('SaveResult with property_id:', saveResult);
       } else {
-        // Salva senza property_id (fallback)
+        // Save without property_id (fallback)
         saveResult = await FormService.saveForm(values);
         console.log('SaveResult without property_id:', saveResult);
       }
       
       if (saveResult.success) {
         try {
-          // Simula invio al server (opzionale)
+          // Simulate server submission (optional)
           const serverResult = await FormService.sendToServer(values);
           console.log('Server result:', serverResult);
         } catch (serverError) {
           console.warn('Server communication failed, but data is saved:', serverError);
-          // Non blocchiamo il flusso se il server fallisce
+          // Don't block flow if server fails
         }
         
-        // Mostra messaggio di successo specifico
+        // Show specific success message
         if (saveResult.savedToDatabase) {
-          console.log('✅ Form salvato con successo nel database e localmente');
+          console.log('✅ Form saved successfully in database and locally');
         } else {
-          console.log('⚠️ Form salvato solo localmente (database non disponibile)');
+          console.log('⚠️ Form saved only locally (database not available)');
         }
         
         setSubmitSuccess(true);
@@ -171,7 +171,7 @@ function FormWizard({ amenities = [] }) {
     } catch (error) {
       console.error('Submission error:', error);
       
-      // Mostra un messaggio più specifico in base al tipo di errore
+      // Show more specific message based on error type
       if (error.message && error.message !== 'undefined') {
         alert(`Errore: ${error.message}`);
       } else {
@@ -226,11 +226,11 @@ function FormWizard({ amenities = [] }) {
             activeStep={activeStep} 
             alternativeLabel
             sx={{
-              // Nascondi le etichette su mobile
+              // Hide labels on mobile
               '& .MuiStepLabel-label': {
                 display: { xs: 'none', sm: 'block' }
               },
-              // Riduci lo spazio tra gli step su mobile
+              // Reduce spacing between steps on mobile
               '& .MuiStep-root': {
                 padding: { xs: '0 8px', sm: '0 16px' }
               }
@@ -241,7 +241,7 @@ function FormWizard({ amenities = [] }) {
                 <StepLabel 
                   icon={index === steps.length - 1 && activeStep === steps.length - 1 ? <CheckCircle /> : undefined}
                   sx={{
-                    // Mostra le etichette solo su schermi grandi
+                    // Show labels only on large screens
                     '& .MuiStepLabel-label': {
                       fontSize: { xs: '0.75rem', sm: '0.875rem' },
                       lineHeight: { xs: 1.2, sm: 1.4 }
@@ -254,7 +254,7 @@ function FormWizard({ amenities = [] }) {
             ))}
           </Stepper>
           
-          {/* Mostra le etichette degli step su mobile in formato compatto */}
+          {/* Show step labels on mobile in compact format */}
           <Box sx={{ 
             display: { xs: 'flex', sm: 'none' }, 
             justifyContent: 'space-between', 

@@ -50,42 +50,42 @@ function AdminPanel({ onLogout, user }) {
 
   const checkDatabaseStatus = async () => {
     try {
-      // Import dinamico di SupabaseService
+      // Dynamic import of SupabaseService
       const { default: SupabaseServiceModule } = await import('../services/supabaseService');
       const supabaseService = new SupabaseServiceModule();
       const result = await supabaseService.healthCheck();
       setDbStatus(result.success ? 'connected' : 'disconnected');
     } catch (error) {
-      console.warn('Errore nel controllo database:', error);
+      console.warn('Database check error:', error);
       setDbStatus('disconnected');
     }
   };
 
   const loadData = async () => {
     try {
-      // Import dinamico di SupabaseService
+      // Dynamic import of SupabaseService
       const { default: SupabaseServiceModule } = await import('../services/supabaseService');
       const supabaseService = new SupabaseServiceModule();
       
-      // Carica dati da Supabase
+      // Load data from Supabase
       const formsResult = await supabaseService.getAllForms();
       const statsResult = await supabaseService.getStats();
       
       if (formsResult.success) {
         setForms(formsResult.data);
       } else {
-        console.error('Errore caricamento forms:', formsResult.error);
+        console.error('Error loading forms:', formsResult.error);
         setForms([]);
       }
       
       if (statsResult.success) {
         setStats(statsResult.data);
       } else {
-        console.error('Errore caricamento stats:', statsResult.error);
+        console.error('Error loading stats:', statsResult.error);
         setStats(null);
       }
     } catch (error) {
-      console.error('Errore nel caricamento dati:', error);
+      console.error('Error loading data:', error);
       setForms([]);
       setStats(null);
     }
@@ -108,16 +108,16 @@ function AdminPanel({ onLogout, user }) {
         link.click();
         document.body.removeChild(link);
       } else {
-        alert('Errore nell\'esportazione: ' + result.error);
+        alert('Export error: ' + result.error);
       }
     } catch (error) {
-      console.error('Errore export CSV:', error);
-      alert('Errore nell\'esportazione dei dati');
+      console.error('CSV export error:', error);
+      alert('Error exporting data');
     }
   };
 
   const handleClearAll = async () => {
-    if (window.confirm('Sei sicuro di voler eliminare tutti i questionari? Questa azione non può essere annullata.')) {
+    if (window.confirm('Are you sure you want to delete all questionnaires? This action cannot be undone.')) {
           try {
       const { default: SupabaseServiceModule } = await import('../services/supabaseService');
       const supabaseService = new SupabaseServiceModule();
@@ -126,11 +126,11 @@ function AdminPanel({ onLogout, user }) {
         if (result.success) {
           loadData();
         } else {
-          alert('Errore nell\'eliminazione: ' + result.error);
+          alert('Deletion error: ' + result.error);
         }
       } catch (error) {
-        console.error('Errore eliminazione:', error);
-        alert('Errore nell\'eliminazione dei dati');
+        console.error('Deletion error:', error);
+        alert('Error deleting data');
       }
     }
   };
@@ -156,7 +156,7 @@ function AdminPanel({ onLogout, user }) {
   };
 
   if (!stats) {
-    return <Box>Caricamento...</Box>;
+    return <Box>Loading...</Box>;
   }
 
   return (

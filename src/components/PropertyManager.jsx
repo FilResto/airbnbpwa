@@ -41,7 +41,7 @@ import { useNavigate } from 'react-router-dom';
 import QRCode from 'react-qr-code';
 import AmenityConfigurator from './AmenityConfigurator';
 
-// Import dinamico di SupabaseService
+// Dynamic import of SupabaseService
 let SupabaseService = null;
 
 function PropertyManager({ onLogout, user }) {
@@ -67,12 +67,12 @@ function PropertyManager({ onLogout, user }) {
     setError(null);
     
     try {
-      // Debug: verifica variabili d'ambiente
+      // Debug: check environment variables
       //console.log('🔍 Debug Environment Variables:');
       //console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
       //console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'PRESENTE' : 'MANCANTE');
       
-      // Import dinamico di SupabaseService
+      // Dynamic import of SupabaseService
       const { default: SupabaseServiceModule } = await import('../services/supabaseService');
       const supabaseService = new SupabaseServiceModule();
       
@@ -82,11 +82,11 @@ function PropertyManager({ onLogout, user }) {
       if (result.success) {
         setProperties(result.data);
       } else {
-        setError('Errore nel caricamento delle proprietà: ' + result.error);
+        setError('Error loading properties: ' + result.error);
       }
     } catch (error) {
-      console.error('Errore nel caricamento proprietà:', error);
-      setError('Errore di connessione al database: ' + error.message);
+      console.error('Error loading properties:', error);
+      setError('Database connection error: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -94,7 +94,7 @@ function PropertyManager({ onLogout, user }) {
 
   const handleAddProperty = async () => {
     if (!newProperty.name.trim()) {
-      setError('Il nome della proprietà è obbligatorio');
+      setError('Property name is required');
       return;
     }
 
@@ -105,19 +105,19 @@ function PropertyManager({ onLogout, user }) {
       if (result.success) {
         setOpenDialog(false);
         setNewProperty({ name: '', description: '' });
-        loadProperties(); // Ricarica la lista
+        loadProperties(); // Reload list
         setError(null);
       } else {
-        setError('Errore nel salvataggio: ' + result.error);
+        setError('Save error: ' + result.error);
       }
     } catch (error) {
-      console.error('Errore nel salvataggio proprietà:', error);
-      setError('Errore di connessione al database');
+      console.error('Error saving property:', error);
+      setError('Database connection error');
     }
   };
 
   const handleDeleteProperty = async (propertyId) => {
-    if (!window.confirm('Sei sicuro di voler eliminare questa proprietà? Questa azione non può essere annullata.')) {
+    if (!window.confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
       return;
     }
 
@@ -126,14 +126,14 @@ function PropertyManager({ onLogout, user }) {
       const supabaseService = new SupabaseServiceModule();
       const result = await supabaseService.deleteProperty(propertyId);
       if (result.success) {
-        loadProperties(); // Ricarica la lista
+        loadProperties(); // Reload list
         setError(null);
       } else {
-        setError('Errore nell\'eliminazione: ' + result.error);
+        setError('Deletion error: ' + result.error);
       }
     } catch (error) {
-      console.error('Errore nell\'eliminazione proprietà:', error);
-      setError('Errore di connessione al database');
+      console.error('Error deleting property:', error);
+      setError('Database connection error');
     }
   };
 
@@ -143,7 +143,7 @@ function PropertyManager({ onLogout, user }) {
   };
 
   const handleViewProperty = (propertyId) => {
-    // Apri il form con il property_id specifico
+    // Open form with specific property_id
     window.open(`/?casa=${propertyId}`, '_blank');
   };
 
@@ -163,19 +163,19 @@ function PropertyManager({ onLogout, user }) {
     try {
       await navigator.clipboard.writeText(link);
       setCopiedLink(true);
-      // Trova la proprietà per mostrare il feedback corretto
+      // Find property to show correct feedback
       const property = properties.find(p => p.id === propertyId);
       if (property) {
         setSelectedPropertyForQR(property);
-        setCopyMessage(`Link per "${property.name}" copiato negli appunti!`);
+        setCopyMessage(`Link for "${property.name}" copied to clipboard!`);
       }
       setTimeout(() => {
         setCopiedLink(false);
         setCopyMessage('');
       }, 2000);
     } catch (error) {
-      console.error('Errore nel copiare il link:', error);
-      // Fallback per browser che non supportano clipboard API
+      console.error('Error copying link:', error);
+      // Fallback for browsers that don't support clipboard API
       const textArea = document.createElement('textarea');
       textArea.value = link;
       document.body.appendChild(textArea);
@@ -183,11 +183,11 @@ function PropertyManager({ onLogout, user }) {
       document.execCommand('copy');
       document.body.removeChild(textArea);
       setCopiedLink(true);
-      // Trova la proprietà per mostrare il feedback corretto
+      // Find property to show correct feedback
       const property = properties.find(p => p.id === propertyId);
       if (property) {
         setSelectedPropertyForQR(property);
-        setCopyMessage(`Link per "${property.name}" copiato negli appunti!`);
+        setCopyMessage(`Link for "${property.name}" copied to clipboard!`);
       }
       setTimeout(() => {
         setCopiedLink(false);
@@ -341,7 +341,7 @@ function PropertyManager({ onLogout, user }) {
                       }
                       sx={{ 
                         flex: 1,
-                        minWidth: 0 // Permette al testo di wrappare
+                        minWidth: 0 // Allow text to wrap
                       }}
                     />
                     <Box sx={{ 

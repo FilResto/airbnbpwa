@@ -20,10 +20,10 @@ import {
   CheckCircle,
 } from '@mui/icons-material';
 
-// Import dinamico di SupabaseService
+// Dynamic import of SupabaseService
 let SupabaseService = null;
 
-// Lista elettrodomestici standard
+// Standard amenities list
 const STANDARD_AMENITIES = [
   { id: 'frigorifero', name: 'Frigorifero', icon: '❄️' },
   { id: 'congelatore', name: 'Congelatore', icon: '🧊' },
@@ -68,21 +68,21 @@ function AmenityConfigurator({ propertyId }) {
     setError(null);
     
     try {
-      // Import dinamico di SupabaseService
+      // Dynamic import of SupabaseService
       const { default: SupabaseServiceModule } = await import('../services/supabaseService');
       const supabaseService = new SupabaseServiceModule();
       
       const result = await supabaseService.getPropertyAmenities(propertyId);
       if (result.success) {
-        // Trasforma la lista di amenità in array di ID
+        // Transform amenities list to array of IDs
         const amenityIds = result.data.map(amenity => amenity.amenity_name);
         setSelectedAmenities(amenityIds);
       } else {
-        setError('Errore nel caricamento delle amenità: ' + result.error);
+        setError('Error loading amenities: ' + result.error);
       }
     } catch (error) {
-      console.error('Errore nel caricamento amenità:', error);
-      setError('Errore di connessione al database');
+      console.error('Error loading amenities:', error);
+      setError('Database connection error');
     } finally {
       setLoading(false);
     }
@@ -107,13 +107,13 @@ function AmenityConfigurator({ propertyId }) {
       const result = await supabaseService.savePropertyAmenities(propertyId, selectedAmenities);
       if (result.success) {
         setSuccess(true);
-        setTimeout(() => setSuccess(false), 3000); // Nasconde il messaggio dopo 3 secondi
+        setTimeout(() => setSuccess(false), 3000); // Hide message after 3 seconds
       } else {
-        setError('Errore nel salvataggio: ' + result.error);
+        setError('Save error: ' + result.error);
       }
     } catch (error) {
-      console.error('Errore nel salvataggio amenità:', error);
-      setError('Errore di connessione al database');
+      console.error('Error saving amenities:', error);
+      setError('Database connection error');
     } finally {
       setSaving(false);
     }
@@ -128,7 +128,7 @@ function AmenityConfigurator({ propertyId }) {
   if (!propertyId) {
     return (
       <Alert severity="warning">
-        Property ID non fornito. Impossibile configurare le amenità.
+        Property ID not provided. Unable to configure amenities.
       </Alert>
     );
   }

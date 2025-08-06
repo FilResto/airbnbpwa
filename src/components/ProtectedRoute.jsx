@@ -27,7 +27,7 @@ function ProtectedRoute({ children }) {
         setUser(null);
       }
     } catch (error) {
-      console.error('Errore nel controllo autenticazione:', error);
+      console.error('Authentication check error:', error);
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -40,7 +40,7 @@ function ProtectedRoute({ children }) {
       const { default: SupabaseServiceModule } = await import('../services/supabaseService');
       const supabaseService = new SupabaseServiceModule();
       
-      // Ascolta i cambiamenti di stato dell'autenticazione
+      // Listen for authentication state changes
       const { data: { subscription } } = supabaseService.onAuthStateChange(
         async (event, session) => {
           console.log('Auth state changed:', event, session);
@@ -55,10 +55,10 @@ function ProtectedRoute({ children }) {
         }
       );
 
-      // Cleanup della subscription quando il componente viene smontato
+      // Cleanup subscription when component unmounts
       return () => subscription?.unsubscribe();
     } catch (error) {
-      console.error('Errore nel setup auth listener:', error);
+      console.error('Auth listener setup error:', error);
     }
   };
 
@@ -78,10 +78,10 @@ function ProtectedRoute({ children }) {
         setIsAuthenticated(false);
         setUser(null);
       } else {
-        console.error('Errore logout:', result.error);
+        console.error('Logout error:', result.error);
       }
     } catch (error) {
-      console.error('Errore logout:', error);
+      console.error('Logout error:', error);
     }
   };
 
@@ -93,7 +93,7 @@ function ProtectedRoute({ children }) {
         alignItems: 'center', 
         height: '100vh' 
       }}>
-        Caricamento...
+        Loading...
       </div>
     );
   }
@@ -102,7 +102,7 @@ function ProtectedRoute({ children }) {
     return <Login onLogin={handleLogin} />;
   }
 
-  // Aggiungi pulsante logout ai componenti protetti
+  // Add logout button to protected components
   const childrenWithLogout = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
       return React.cloneElement(child, { onLogout: handleLogout, user });

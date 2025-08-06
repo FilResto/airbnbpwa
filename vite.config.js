@@ -29,10 +29,10 @@ export default defineConfig({
       }
     })
   ],
-  // 🌐 Configurazione per accesso da rete locale
+  // 🌐 Configuration for local network access
   server: {
-    host: '0.0.0.0',  // Espone su tutte le interfacce di rete
-    port: 3000,       // Porta più comune e accessibile
-    strictPort: false  // Permette di usare una porta alternativa se occupata
+    host: '0.0.0.0',  // Expose on all network interfaces
+    port: 3000,       // Most common and accessible port
+    strictPort: false  // Allow using alternative port if occupied
   }
 })

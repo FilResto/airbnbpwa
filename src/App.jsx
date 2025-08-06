@@ -111,7 +111,7 @@ function App() {
   const [loadingAmenities, setLoadingAmenities] = useState(false);
 
   useEffect(() => {
-    // Leggi parametro ?casa=X dall'URL
+    // Read ?casa=X parameter from URL
     const urlParams = new URLSearchParams(window.location.search);
     const casaParam = urlParams.get('casa');
     
@@ -122,7 +122,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Fetch amenities quando propertyId cambia
+    // Fetch amenities when propertyId changes
     if (propertyId) {
       setLoadingAmenities(true);
       
@@ -133,18 +133,18 @@ function App() {
             console.log('Amenities loaded:', result.data);
           } else {
             console.warn('Failed to load amenities:', result.error);
-            setAmenities([]); // Fallback a array vuoto
+            setAmenities([]); // Fallback to empty array
           }
         })
         .catch(error => {
           console.error('Error fetching amenities:', error);
-          setAmenities([]); // Fallback a array vuoto
+          setAmenities([]); // Fallback to empty array
         })
         .finally(() => {
           setLoadingAmenities(false);
         });
     } else {
-      setAmenities([]); // Reset se non c'è propertyId
+      setAmenities([]); // Reset if no propertyId
     }
   }, [propertyId]);
 
