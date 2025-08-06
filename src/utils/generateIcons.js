@@ -77,3 +77,85 @@ export function createManifestIcon() {
   
   return canvas.toDataURL('image/png');
 } 
+
+export function generatePWAIcon(size = 192, backgroundColor = '#FF5A5F', foregroundColor = '#FFFFFF') {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  // Sfondo circolare con colore Airbnb
+  ctx.fillStyle = backgroundColor;
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size/2, 0, 2 * Math.PI);
+  ctx.fill();
+
+  // Disegna una casa stilizzata
+  const houseSize = size * 0.4;
+  const houseX = size/2 - houseSize/2;
+  const houseY = size/2 - houseSize/2;
+
+  // Tetto della casa
+  ctx.fillStyle = foregroundColor;
+  ctx.beginPath();
+  ctx.moveTo(houseX, houseY + houseSize * 0.3);
+  ctx.lineTo(houseX + houseSize/2, houseY);
+  ctx.lineTo(houseX + houseSize, houseY + houseSize * 0.3);
+  ctx.fill();
+
+  // Corpo della casa
+  ctx.fillStyle = foregroundColor;
+  ctx.fillRect(houseX, houseY + houseSize * 0.3, houseSize, houseSize * 0.7);
+
+  // Porta
+  ctx.fillStyle = backgroundColor;
+  const doorWidth = houseSize * 0.2;
+  const doorHeight = houseSize * 0.4;
+  const doorX = houseX + houseSize/2 - doorWidth/2;
+  const doorY = houseY + houseSize * 0.6;
+  ctx.fillRect(doorX, doorY, doorWidth, doorHeight);
+
+  // Finestra
+  ctx.fillStyle = backgroundColor;
+  const windowSize = houseSize * 0.15;
+  const windowX = houseX + houseSize * 0.2;
+  const windowY = houseY + houseSize * 0.4;
+  ctx.fillRect(windowX, windowY, windowSize, windowSize);
+
+  // Simbolo di feedback (bolla di chat)
+  const chatSize = size * 0.15;
+  const chatX = size * 0.7;
+  const chatY = size * 0.2;
+  
+  ctx.fillStyle = foregroundColor;
+  ctx.beginPath();
+  ctx.arc(chatX, chatY, chatSize, 0, 2 * Math.PI);
+  ctx.fill();
+  
+  // Puntino della bolla
+  ctx.beginPath();
+  ctx.moveTo(chatX + chatSize * 0.3, chatY + chatSize);
+  ctx.lineTo(chatX + chatSize * 0.5, chatY + chatSize * 1.2);
+  ctx.lineTo(chatX + chatSize * 0.7, chatY + chatSize);
+  ctx.fill();
+
+  return canvas.toDataURL('image/png');
+}
+
+export function createPWAIcons() {
+  console.log('🎨 Generando icone PWA...');
+  
+  // Genera icona 192x192
+  const icon192 = generatePWAIcon(192);
+  downloadIcon(icon192, 'pwa-192x192.png');
+  
+  // Genera icona 512x512
+  const icon512 = generatePWAIcon(512);
+  downloadIcon(icon512, 'pwa-512x512.png');
+  
+  // Genera apple-touch-icon
+  const appleIcon = generatePWAIcon(180);
+  downloadIcon(appleIcon, 'apple-touch-icon.png');
+  
+  console.log('✅ Icone PWA generate con successo!');
+} 
