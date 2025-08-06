@@ -29,7 +29,9 @@ import {
   Delete,
   Visibility,
   Logout,
+  Assessment,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import AmenityConfigurator from './AmenityConfigurator';
 
 // Import dinamico di SupabaseService
@@ -43,6 +45,7 @@ function PropertyManager({ onLogout, user }) {
   const [error, setError] = useState(null);
   const [selectedPropertyForConfig, setSelectedPropertyForConfig] = useState(null);
   const [showAmenityConfigurator, setShowAmenityConfigurator] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadProperties();
@@ -142,7 +145,15 @@ function PropertyManager({ onLogout, user }) {
           Gestione Proprietà
         </Typography>
         
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Button
+            variant="outlined"
+            startIcon={<Assessment />}
+            onClick={() => navigate('/admin')}
+            size="small"
+          >
+            Pannello Admin
+          </Button>
           <Button
             variant="contained"
             startIcon={<Add />}

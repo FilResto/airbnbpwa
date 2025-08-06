@@ -29,7 +29,10 @@ import {
   Delete,
   Visibility,
   Logout,
+  Home,
+  Settings,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import FormService from '../services/formService';
 
 function AdminPanel({ onLogout, user }) {
@@ -38,6 +41,7 @@ function AdminPanel({ onLogout, user }) {
   const [selectedForm, setSelectedForm] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [dbStatus, setDbStatus] = useState('checking');
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadData();
@@ -180,6 +184,14 @@ function AdminPanel({ onLogout, user }) {
               size="small"
             />
           )}
+          <Button
+            variant="outlined"
+            startIcon={<Settings />}
+            onClick={() => navigate('/properties')}
+            size="small"
+          >
+            Gestione Proprietà
+          </Button>
           {onLogout && (
             <Button
               variant="outlined"
