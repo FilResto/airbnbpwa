@@ -205,18 +205,36 @@ function PropertyManager({ onLogout, user }) {
   return (
     <Box sx={{ p: 3 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'stretch', sm: 'center' }, 
+        gap: { xs: 2, sm: 0 },
+        mb: 3 
+      }}>
         <Typography variant="h4" sx={{ display: 'flex', alignItems: 'center' }}>
           <Home sx={{ mr: 2, color: 'primary.main' }} />
           Gestione Proprietà
         </Typography>
         
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 1 }, 
+          alignItems: { xs: 'stretch', sm: 'center' },
+          width: { xs: '100%', sm: 'auto' }
+        }}>
           <Button
             variant="outlined"
             startIcon={<Assessment />}
             onClick={() => navigate('/admin')}
             size="small"
+            fullWidth={false}
+            sx={{ 
+              width: { xs: '100%', sm: 'auto' },
+              order: { xs: 1, sm: 1 }
+            }}
           >
             Pannello Admin
           </Button>
@@ -224,6 +242,11 @@ function PropertyManager({ onLogout, user }) {
             variant="contained"
             startIcon={<Add />}
             onClick={() => setOpenDialog(true)}
+            fullWidth={false}
+            sx={{ 
+              width: { xs: '100%', sm: 'auto' },
+              order: { xs: 2, sm: 2 }
+            }}
           >
             Nuova Proprietà
           </Button>
@@ -233,6 +256,10 @@ function PropertyManager({ onLogout, user }) {
               color="primary"
               variant="outlined"
               size="small"
+              sx={{ 
+                order: { xs: 3, sm: 3 },
+                alignSelf: { xs: 'center', sm: 'auto' }
+              }}
             />
           )}
           {onLogout && (
@@ -241,6 +268,11 @@ function PropertyManager({ onLogout, user }) {
               color="error"
               startIcon={<Logout />}
               onClick={onLogout}
+              fullWidth={false}
+              sx={{ 
+                width: { xs: '100%', sm: 'auto' },
+                order: { xs: 4, sm: 4 }
+              }}
             >
               Logout
             </Button>
@@ -281,10 +313,19 @@ function PropertyManager({ onLogout, user }) {
             <List>
               {properties.map((property, index) => (
                 <React.Fragment key={property.id}>
-                  <ListItem>
+                  <ListItem sx={{ 
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'stretch', sm: 'center' },
+                    gap: { xs: 2, sm: 0 }
+                  }}>
                     <ListItemText
                       primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ 
+                          display: 'flex', 
+                          flexDirection: { xs: 'column', sm: 'row' },
+                          alignItems: { xs: 'flex-start', sm: 'center' }, 
+                          gap: 1 
+                        }}>
                           <Typography variant="h6">{property.name}</Typography>
                           <Chip 
                             label={`ID: ${property.id.slice(0, 8)}...`} 
@@ -298,51 +339,65 @@ function PropertyManager({ onLogout, user }) {
                           {property.description || 'Nessuna descrizione'}
                         </Typography>
                       }
+                      sx={{ 
+                        flex: 1,
+                        minWidth: 0 // Permette al testo di wrappare
+                      }}
                     />
-                    <ListItemSecondaryAction>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Tooltip title="Visualizza Form">
-                          <IconButton
-                            color="primary"
-                            onClick={() => handleViewProperty(property.id)}
-                          >
-                            <Visibility />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Genera QR Code">
-                          <IconButton
-                            color="info"
-                            onClick={() => handleShowQRCode(property)}
-                          >
-                            <QrCode />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Copia Link">
-                          <IconButton
-                            color="success"
-                            onClick={() => handleCopyLink(property.id)}
-                          >
-                            {copiedLink && selectedPropertyForQR?.id === property.id ? <CheckCircle /> : <Link />}
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Configura Elettrodomestici">
-                          <IconButton
-                            color="secondary"
-                            onClick={() => handleConfigureAppliances(property.id)}
-                          >
-                            <Settings />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Elimina Proprietà">
-                          <IconButton
-                            color="error"
-                            onClick={() => handleDeleteProperty(property.id)}
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </ListItemSecondaryAction>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexDirection: { xs: 'row', sm: 'row' },
+                      gap: { xs: 0.5, sm: 1 },
+                      flexWrap: 'wrap',
+                      justifyContent: { xs: 'center', sm: 'flex-end' },
+                      width: { xs: '100%', sm: 'auto' }
+                    }}>
+                      <Tooltip title="Visualizza Form" placement="top">
+                        <IconButton
+                          color="primary"
+                          onClick={() => handleViewProperty(property.id)}
+                          size="small"
+                        >
+                          <Visibility />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Genera QR Code" placement="top">
+                        <IconButton
+                          color="info"
+                          onClick={() => handleShowQRCode(property)}
+                          size="small"
+                        >
+                          <QrCode />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Copia Link" placement="top">
+                        <IconButton
+                          color="success"
+                          onClick={() => handleCopyLink(property.id)}
+                          size="small"
+                        >
+                          {copiedLink && selectedPropertyForQR?.id === property.id ? <CheckCircle /> : <Link />}
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Configura Elettrodomestici" placement="top">
+                        <IconButton
+                          color="secondary"
+                          onClick={() => handleConfigureAppliances(property.id)}
+                          size="small"
+                        >
+                          <Settings />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Elimina Proprietà" placement="top">
+                        <IconButton
+                          color="error"
+                          onClick={() => handleDeleteProperty(property.id)}
+                          size="small"
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </ListItem>
                   {index < properties.length - 1 && <Divider />}
                 </React.Fragment>
@@ -353,7 +408,18 @@ function PropertyManager({ onLogout, user }) {
       </Card>
 
       {/* Add Property Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+      <Dialog 
+        open={openDialog} 
+        onClose={() => setOpenDialog(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: { 
+            width: { xs: '95%', sm: 'auto' },
+            maxWidth: { xs: '95%', sm: '600px' }
+          }
+        }}
+      >
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Add sx={{ mr: 1, color: 'primary.main' }} />
@@ -381,14 +447,24 @@ function PropertyManager({ onLogout, user }) {
             />
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>
+        <DialogActions sx={{ 
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 0 },
+          p: { xs: 2, sm: 2 }
+        }}>
+          <Button 
+            onClick={() => setOpenDialog(false)}
+            fullWidth={false}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
+          >
             Annulla
           </Button>
           <Button 
             onClick={handleAddProperty}
             variant="contained"
             disabled={!newProperty.name.trim()}
+            fullWidth={false}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             Salva Proprietà
           </Button>
@@ -428,6 +504,12 @@ function PropertyManager({ onLogout, user }) {
         onClose={() => setShowQRDialog(false)} 
         maxWidth="sm" 
         fullWidth
+        PaperProps={{
+          sx: { 
+            width: { xs: '95%', sm: 'auto' },
+            maxWidth: { xs: '95%', sm: '600px' }
+          }
+        }}
       >
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -442,10 +524,14 @@ function PropertyManager({ onLogout, user }) {
                 Scansiona questo QR code per accedere direttamente al questionario di feedback
               </Typography>
               
-              <Paper elevation={3} sx={{ p: 3, display: 'inline-block', mb: 3 }}>
+              <Paper elevation={3} sx={{ 
+                p: { xs: 2, sm: 3 }, 
+                display: 'inline-block', 
+                mb: 3 
+              }}>
                 <QRCode
                   value={generatePropertyLink(selectedPropertyForQR.id)}
-                  size={200}
+                  size={window.innerWidth < 600 ? 150 : 200}
                   level="M"
                   style={{ background: 'white' }}
                 />
@@ -485,14 +571,24 @@ function PropertyManager({ onLogout, user }) {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowQRDialog(false)}>
+        <DialogActions sx={{ 
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 0 },
+          p: { xs: 2, sm: 2 }
+        }}>
+          <Button 
+            onClick={() => setShowQRDialog(false)}
+            fullWidth={false}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
+          >
             Chiudi
           </Button>
           <Button 
             onClick={handleCopyLinkFromDialog}
             variant="contained"
             startIcon={copiedLink ? <CheckCircle /> : <ContentCopy />}
+            fullWidth={false}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             {copiedLink ? 'Link Copiato!' : 'Copia Link'}
           </Button>

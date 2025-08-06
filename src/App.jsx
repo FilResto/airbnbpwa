@@ -74,6 +74,34 @@ const theme = createTheme({
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          margin: { xs: '16px', sm: '32px' },
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          padding: { xs: '16px', sm: '24px' },
+        },
+      },
+    },
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          padding: { xs: '12px 16px', sm: '16px 24px' },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          padding: { xs: '8px', sm: '12px' },
+        },
+      },
+    },
   },
 });
 

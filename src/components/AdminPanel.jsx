@@ -161,13 +161,26 @@ function AdminPanel({ onLogout, user }) {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'stretch', sm: 'center' }, 
+        gap: { xs: 2, sm: 0 },
+        mb: 2 
+      }}>
         <Typography variant="h4" sx={{ display: 'flex', alignItems: 'center' }}>
           <Assessment sx={{ mr: 2 }} />
           Pannello Amministrativo - Feedback Airbnb
         </Typography>
         
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 1 }, 
+          alignItems: { xs: 'stretch', sm: 'center' },
+          width: { xs: '100%', sm: 'auto' }
+        }}>
           <Chip 
             label={dbStatus === 'connected' ? 'Database Connesso' : 
                   dbStatus === 'disconnected' ? 'Solo localStorage' : 'Verificando...'}
@@ -175,6 +188,9 @@ function AdminPanel({ onLogout, user }) {
                    dbStatus === 'disconnected' ? 'warning' : 'default'}
             variant="outlined"
             size="small"
+            sx={{ 
+              alignSelf: { xs: 'center', sm: 'auto' }
+            }}
           />
           {user && (
             <Chip 
@@ -182,6 +198,9 @@ function AdminPanel({ onLogout, user }) {
               color="primary"
               variant="outlined"
               size="small"
+              sx={{ 
+                alignSelf: { xs: 'center', sm: 'auto' }
+              }}
             />
           )}
           <Button
@@ -189,6 +208,10 @@ function AdminPanel({ onLogout, user }) {
             startIcon={<Settings />}
             onClick={() => navigate('/properties')}
             size="small"
+            fullWidth={false}
+            sx={{ 
+              width: { xs: '100%', sm: 'auto' }
+            }}
           >
             Gestione Proprietà
           </Button>
@@ -199,6 +222,10 @@ function AdminPanel({ onLogout, user }) {
               startIcon={<Logout />}
               onClick={onLogout}
               size="small"
+              fullWidth={false}
+              sx={{ 
+                width: { xs: '100%', sm: 'auto' }
+              }}
             >
               Logout
             </Button>
@@ -207,15 +234,27 @@ function AdminPanel({ onLogout, user }) {
       </Box>
 
       {/* Statistics Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={2} sx={{ mb: 4 }}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <People sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'center', sm: 'flex-start' },
+                textAlign: { xs: 'center', sm: 'left' }
+              }}>
+                <People sx={{ 
+                  fontSize: { xs: 32, sm: 40 }, 
+                  color: 'primary.main', 
+                  mr: { xs: 0, sm: 2 },
+                  mb: { xs: 1, sm: 0 }
+                }} />
                 <Box>
-                  <Typography variant="h4">{stats.totalForms}</Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
+                    {stats.totalForms}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                     Questionari Totali
                   </Typography>
                 </Box>
@@ -224,14 +263,26 @@ function AdminPanel({ onLogout, user }) {
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Star sx={{ fontSize: 40, color: 'warning.main', mr: 2 }} />
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'center', sm: 'flex-start' },
+                textAlign: { xs: 'center', sm: 'left' }
+              }}>
+                <Star sx={{ 
+                  fontSize: { xs: 32, sm: 40 }, 
+                  color: 'warning.main', 
+                  mr: { xs: 0, sm: 2 },
+                  mb: { xs: 1, sm: 0 }
+                }} />
                 <Box>
-                  <Typography variant="h4">{stats.averageRating}/5</Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
+                    {stats.averageRating}/5
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                     Valutazione Media
                   </Typography>
                 </Box>
@@ -240,14 +291,26 @@ function AdminPanel({ onLogout, user }) {
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <TrendingUp sx={{ fontSize: 40, color: 'success.main', mr: 2 }} />
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'center', sm: 'flex-start' },
+                textAlign: { xs: 'center', sm: 'left' }
+              }}>
+                <TrendingUp sx={{ 
+                  fontSize: { xs: 32, sm: 40 }, 
+                  color: 'success.main', 
+                  mr: { xs: 0, sm: 2 },
+                  mb: { xs: 1, sm: 0 }
+                }} />
                 <Box>
-                  <Typography variant="h4">{stats.averageNPS}/10</Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
+                    {stats.averageNPS}/10
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                     NPS Medio
                   </Typography>
                 </Box>
@@ -256,14 +319,16 @@ function AdminPanel({ onLogout, user }) {
           </Card>
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card>
-            <CardContent>
-              <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Box sx={{ 
+                textAlign: { xs: 'center', sm: 'left' }
+              }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                   Ultimo Invio
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
                   {stats.lastSubmission 
                     ? formatDate(stats.lastSubmission)
                     : 'Nessuno'
@@ -276,12 +341,22 @@ function AdminPanel({ onLogout, user }) {
       </Grid>
 
       {/* Actions */}
-      <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+      <Box sx={{ 
+        mb: 3, 
+        display: 'flex', 
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: { xs: 1, sm: 2 }, 
+        flexWrap: 'wrap' 
+      }}>
         <Button
           variant="contained"
           startIcon={<Download />}
           onClick={handleExportCSV}
           disabled={forms.length === 0}
+          fullWidth={false}
+          sx={{ 
+            width: { xs: '100%', sm: 'auto' }
+          }}
         >
           Esporta CSV
         </Button>
@@ -291,6 +366,10 @@ function AdminPanel({ onLogout, user }) {
           startIcon={<Delete />}
           onClick={handleClearAll}
           disabled={forms.length === 0}
+          fullWidth={false}
+          sx={{ 
+            width: { xs: '100%', sm: 'auto' }
+          }}
         >
           Elimina Tutti
         </Button>
@@ -308,97 +387,179 @@ function AdminPanel({ onLogout, user }) {
               Nessun questionario ricevuto ancora.
             </Alert>
           ) : (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Data</TableCell>
-                    <TableCell>Proprietà</TableCell>
-                    <TableCell>Pulizia</TableCell>
-                    <TableCell>NPS</TableCell>
-                    <TableCell>Valutazione</TableCell>
-                    <TableCell>Tornare</TableCell>
-                    <TableCell>Azioni</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {forms.map((form) => (
-                    <TableRow key={form.id}>
-                      <TableCell>
-                        {formatDate(form.timestamp)}
-                      </TableCell>
-                      <TableCell>
-                        <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                            {form.property_name}
+            <>
+              {/* Desktop Table View */}
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Data</TableCell>
+                        <TableCell>Proprietà</TableCell>
+                        <TableCell>Pulizia</TableCell>
+                        <TableCell>NPS</TableCell>
+                        <TableCell>Valutazione</TableCell>
+                        <TableCell>Tornare</TableCell>
+                        <TableCell>Azioni</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {forms.map((form) => (
+                        <TableRow key={form.id}>
+                          <TableCell>
+                            {formatDate(form.timestamp)}
+                          </TableCell>
+                          <TableCell>
+                            <Box>
+                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                {form.property_name}
+                              </Typography>
+                              {form.property_id && (
+                                <Typography variant="caption" color="text.secondary">
+                                  ID: {form.property_id.slice(0, 8)}...
+                                </Typography>
+                              )}
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                            {form.data.pulizia_complessiva ? (
+                              <Chip 
+                                label={`${form.data.pulizia_complessiva}/5`}
+                                color={form.data.pulizia_complessiva >= 4 ? 'success' : 
+                                       form.data.pulizia_complessiva >= 3 ? 'warning' : 'error'}
+                                size="small"
+                              />
+                            ) : '-'}
+                          </TableCell>
+                          <TableCell>
+                            {form.data.nps_score !== undefined && form.data.nps_score !== '' ? (
+                              <Chip 
+                                label={`${form.data.nps_score}/10`}
+                                color={form.data.nps_score >= 9 ? 'success' : 
+                                       form.data.nps_score >= 7 ? 'warning' : 'error'}
+                                size="small"
+                              />
+                            ) : '-'}
+                          </TableCell>
+                          <TableCell>
+                            {form.data.valutazione_complessiva ? (
+                              <Chip 
+                                label={`${form.data.valutazione_complessiva}/5`}
+                                color={form.data.valutazione_complessiva >= 4 ? 'success' : 
+                                       form.data.valutazione_complessiva >= 3 ? 'warning' : 'error'}
+                                size="small"
+                              />
+                            ) : '-'}
+                          </TableCell>
+                          <TableCell>
+                            {form.data.tornare ? (
+                              <Chip 
+                                label={getReturnLikelihood(form.data.tornare)}
+                                color={form.data.tornare.includes('si') ? 'success' : 
+                                       form.data.tornare === 'non_so' ? 'warning' : 'error'}
+                                size="small"
+                              />
+                            ) : '-'}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              size="small"
+                              startIcon={<Visibility />}
+                              onClick={() => handleViewForm(form)}
+                            >
+                              Dettagli
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+
+              {/* Mobile Card View */}
+              <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+                {forms.map((form, index) => (
+                  <Card key={form.id} sx={{ mb: 2, p: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="h6" sx={{ fontSize: '1rem', mb: 1 }}>
+                          {form.property_name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                          {formatDate(form.timestamp)}
+                        </Typography>
+                        {form.property_id && (
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                            ID: {form.property_id.slice(0, 8)}...
                           </Typography>
-                          {form.property_id && (
-                            <Typography variant="caption" color="text.secondary">
-                              ID: {form.property_id.slice(0, 8)}...
-                            </Typography>
-                          )}
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        {form.data.pulizia_complessiva ? (
-                          <Chip 
-                            label={`${form.data.pulizia_complessiva}/5`}
-                            color={form.data.pulizia_complessiva >= 4 ? 'success' : 
-                                   form.data.pulizia_complessiva >= 3 ? 'warning' : 'error'}
-                            size="small"
-                          />
-                        ) : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {form.data.nps_score !== undefined && form.data.nps_score !== '' ? (
-                          <Chip 
-                            label={`${form.data.nps_score}/10`}
-                            color={form.data.nps_score >= 9 ? 'success' : 
-                                   form.data.nps_score >= 7 ? 'warning' : 'error'}
-                            size="small"
-                          />
-                        ) : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {form.data.valutazione_complessiva ? (
-                          <Chip 
-                            label={`${form.data.valutazione_complessiva}/5`}
-                            color={form.data.valutazione_complessiva >= 4 ? 'success' : 
-                                   form.data.valutazione_complessiva >= 3 ? 'warning' : 'error'}
-                            size="small"
-                          />
-                        ) : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {form.data.tornare ? (
-                          <Chip 
-                            label={getReturnLikelihood(form.data.tornare)}
-                            color={form.data.tornare.includes('si') ? 'success' : 
-                                   form.data.tornare === 'non_so' ? 'warning' : 'error'}
-                            size="small"
-                          />
-                        ) : '-'}
-                      </TableCell>
-                      <TableCell>
-                        <Button
+                        )}
+                      </Box>
+                      <Button
+                        size="small"
+                        startIcon={<Visibility />}
+                        onClick={() => handleViewForm(form)}
+                        variant="outlined"
+                      >
+                        Dettagli
+                      </Button>
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {form.data.pulizia_complessiva && (
+                        <Chip 
+                          label={`Pulizia: ${form.data.pulizia_complessiva}/5`}
+                          color={form.data.pulizia_complessiva >= 4 ? 'success' : 
+                                 form.data.pulizia_complessiva >= 3 ? 'warning' : 'error'}
                           size="small"
-                          startIcon={<Visibility />}
-                          onClick={() => handleViewForm(form)}
-                        >
-                          Dettagli
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                        />
+                      )}
+                      {form.data.nps_score !== undefined && form.data.nps_score !== '' && (
+                        <Chip 
+                          label={`NPS: ${form.data.nps_score}/10`}
+                          color={form.data.nps_score >= 9 ? 'success' : 
+                                 form.data.nps_score >= 7 ? 'warning' : 'error'}
+                          size="small"
+                        />
+                      )}
+                      {form.data.valutazione_complessiva && (
+                        <Chip 
+                          label={`Valutazione: ${form.data.valutazione_complessiva}/5`}
+                          color={form.data.valutazione_complessiva >= 4 ? 'success' : 
+                                 form.data.valutazione_complessiva >= 3 ? 'warning' : 'error'}
+                          size="small"
+                        />
+                      )}
+                      {form.data.tornare && (
+                        <Chip 
+                          label={`Tornare: ${getReturnLikelihood(form.data.tornare)}`}
+                          color={form.data.tornare.includes('si') ? 'success' : 
+                                 form.data.tornare === 'non_so' ? 'warning' : 'error'}
+                          size="small"
+                        />
+                      )}
+                    </Box>
+                  </Card>
+                ))}
+              </Box>
+            </>
           )}
         </CardContent>
       </Card>
 
       {/* Form Details Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
+      <Dialog 
+        open={openDialog} 
+        onClose={() => setOpenDialog(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: { 
+            width: { xs: '95%', sm: 'auto' },
+            maxWidth: { xs: '95%', sm: '800px' }
+          }
+        }}
+      >
         <DialogTitle>
           Dettagli Questionario - {selectedForm && formatDate(selectedForm.timestamp)}
           {selectedForm?.property_name && (
@@ -431,8 +592,18 @@ function AdminPanel({ onLogout, user }) {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Chiudi</Button>
+        <DialogActions sx={{ 
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 0 },
+          p: { xs: 2, sm: 2 }
+        }}>
+          <Button 
+            onClick={() => setOpenDialog(false)}
+            fullWidth={false}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
+          >
+            Chiudi
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
