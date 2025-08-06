@@ -20,6 +20,8 @@ import {
   CircularProgress,
   Chip,
   Divider,
+  Tooltip,
+  Paper,
 } from '@mui/material';
 import {
   Add,
@@ -30,8 +32,13 @@ import {
   Visibility,
   Logout,
   Assessment,
+  QrCode,
+  Link,
+  ContentCopy,
+  CheckCircle,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import QRCode from 'react-qr-code';
 import AmenityConfigurator from './AmenityConfigurator';
 
 // Import dinamico di SupabaseService
@@ -45,6 +52,10 @@ function PropertyManager({ onLogout, user }) {
   const [error, setError] = useState(null);
   const [selectedPropertyForConfig, setSelectedPropertyForConfig] = useState(null);
   const [showAmenityConfigurator, setShowAmenityConfigurator] = useState(false);
+  const [showQRDialog, setShowQRDialog] = useState(false);
+  const [selectedPropertyForQR, setSelectedPropertyForQR] = useState(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copyMessage, setCopyMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -136,6 +147,61 @@ function PropertyManager({ onLogout, user }) {
     window.open(`/?casa=${propertyId}`, '_blank');
   };
 
+  const generatePropertyLink = (propertyId) => {
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/?casa=${propertyId}`;
+  };
+
+  const handleShowQRCode = (property) => {
+    setSelectedPropertyForQR(property);
+    setShowQRDialog(true);
+    setCopiedLink(false);
+  };
+
+  const handleCopyLink = async (propertyId) => {
+    const link = generatePropertyLink(propertyId);
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedLink(true);
+      // Trova la proprietà per mostrare il feedback corretto
+      const property = properties.find(p => p.id === propertyId);
+      if (property) {
+        setSelectedPropertyForQR(property);
+        setCopyMessage(`Link per "${property.name}" copiato negli appunti!`);
+      }
+      setTimeout(() => {
+        setCopiedLink(false);
+        setCopyMessage('');
+      }, 2000);
+    } catch (error) {
+      console.error('Errore nel copiare il link:', error);
+      // Fallback per browser che non supportano clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = link;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedLink(true);
+      // Trova la proprietà per mostrare il feedback corretto
+      const property = properties.find(p => p.id === propertyId);
+      if (property) {
+        setSelectedPropertyForQR(property);
+        setCopyMessage(`Link per "${property.name}" copiato negli appunti!`);
+      }
+      setTimeout(() => {
+        setCopiedLink(false);
+        setCopyMessage('');
+      }, 2000);
+    }
+  };
+
+  const handleCopyLinkFromDialog = async () => {
+    if (selectedPropertyForQR) {
+      await handleCopyLink(selectedPropertyForQR.id);
+    }
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       {/* Header */}
@@ -189,6 +255,13 @@ function PropertyManager({ onLogout, user }) {
         </Alert>
       )}
 
+      {/* Success Alert */}
+      {copyMessage && (
+        <Alert severity="success" sx={{ mb: 3 }} onClose={() => setCopyMessage('')}>
+          {copyMessage}
+        </Alert>
+      )}
+
       {/* Properties List */}
       <Card>
         <CardContent>
@@ -228,27 +301,46 @@ function PropertyManager({ onLogout, user }) {
                     />
                     <ListItemSecondaryAction>
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <IconButton
-                          color="primary"
-                          onClick={() => handleViewProperty(property.id)}
-                          title="Visualizza Form"
-                        >
-                          <Visibility />
-                        </IconButton>
-                        <IconButton
-                          color="secondary"
-                          onClick={() => handleConfigureAppliances(property.id)}
-                          title="Configura Elettrodomestici"
-                        >
-                          <Settings />
-                        </IconButton>
-                        <IconButton
-                          color="error"
-                          onClick={() => handleDeleteProperty(property.id)}
-                          title="Elimina Proprietà"
-                        >
-                          <Delete />
-                        </IconButton>
+                        <Tooltip title="Visualizza Form">
+                          <IconButton
+                            color="primary"
+                            onClick={() => handleViewProperty(property.id)}
+                          >
+                            <Visibility />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Genera QR Code">
+                          <IconButton
+                            color="info"
+                            onClick={() => handleShowQRCode(property)}
+                          >
+                            <QrCode />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Copia Link">
+                          <IconButton
+                            color="success"
+                            onClick={() => handleCopyLink(property.id)}
+                          >
+                            {copiedLink && selectedPropertyForQR?.id === property.id ? <CheckCircle /> : <Link />}
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Configura Elettrodomestici">
+                          <IconButton
+                            color="secondary"
+                            onClick={() => handleConfigureAppliances(property.id)}
+                          >
+                            <Settings />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Elimina Proprietà">
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDeleteProperty(property.id)}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
                       </Box>
                     </ListItemSecondaryAction>
                   </ListItem>
@@ -328,6 +420,83 @@ function PropertyManager({ onLogout, user }) {
             <AmenityConfigurator propertyId={selectedPropertyForConfig} />
           )}
         </DialogContent>
+      </Dialog>
+
+      {/* QR Code Dialog */}
+      <Dialog 
+        open={showQRDialog} 
+        onClose={() => setShowQRDialog(false)} 
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <QrCode sx={{ mr: 1, color: 'primary.main' }} />
+            QR Code per {selectedPropertyForQR?.name}
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {selectedPropertyForQR && (
+            <Box sx={{ textAlign: 'center', py: 2 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Scansiona questo QR code per accedere direttamente al questionario di feedback
+              </Typography>
+              
+              <Paper elevation={3} sx={{ p: 3, display: 'inline-block', mb: 3 }}>
+                <QRCode
+                  value={generatePropertyLink(selectedPropertyForQR.id)}
+                  size={200}
+                  level="M"
+                  style={{ background: 'white' }}
+                />
+              </Paper>
+              
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Link diretto:
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={generatePropertyLink(selectedPropertyForQR.id)}
+                  variant="outlined"
+                  size="small"
+                  InputProps={{
+                    readOnly: true,
+                    endAdornment: (
+                      <IconButton
+                        onClick={() => handleCopyLink(selectedPropertyForQR.id)}
+                        size="small"
+                      >
+                        {copiedLink ? <CheckCircle color="success" /> : <ContentCopy />}
+                      </IconButton>
+                    ),
+                  }}
+                />
+              </Box>
+              
+              <Alert severity="info" sx={{ textAlign: 'left' }}>
+                <Typography variant="body2">
+                  <strong>Come utilizzare:</strong><br />
+                  • Condividi il QR code con gli ospiti alla fine del soggiorno<br />
+                  • Gli ospiti possono scansionare il codice con la fotocamera del telefono<br />
+                  • Il link si aprirà direttamente nel questionario per questa proprietà
+                </Typography>
+              </Alert>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowQRDialog(false)}>
+            Chiudi
+          </Button>
+          <Button 
+            onClick={handleCopyLinkFromDialog}
+            variant="contained"
+            startIcon={copiedLink ? <CheckCircle /> : <ContentCopy />}
+          >
+            {copiedLink ? 'Link Copiato!' : 'Copia Link'}
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );

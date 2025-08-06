@@ -1,275 +1,75 @@
-# 🏠 Airbnb Feedback PWA
+# Airbnb Feedback PWA
 
-Una Progressive Web App (PWA) per raccogliere feedback post-soggiorno da ospiti Airbnb. Costruita con React, Material-UI e Vite.
+Una Progressive Web App per la gestione dei feedback post-soggiorno degli ospiti Airbnb.
 
-## ✨ Caratteristiche
+## 🚀 Funzionalità Principali
 
-- **📱 PWA Completa**: Installabile su desktop e mobile
-- **🎨 UI Moderna**: Interfaccia elegante con Material-UI e tema Airbnb
-- **📋 Form Multi-Step**: Questionario diviso in sezioni intuitive
-- **💾 Salvataggio Locale**: Dati salvati automaticamente nel browser
-- **📊 Pannello Admin**: Visualizzazione statistiche e esportazione dati
-- **🌐 Offline Ready**: Funziona anche senza connessione internet
-- **📱 Responsive**: Ottimizzato per tutti i dispositivi
+### Gestione Proprietà
+- **Creazione proprietà**: Aggiungi nuove proprietà con nome e descrizione
+- **Configurazione elettrodomestici**: Personalizza gli elettrodomestici disponibili per ogni proprietà
+- **Generazione QR Code**: Crea QR code personalizzati per ogni proprietà
+- **Link diretti**: Genera link diretti per accedere al questionario specifico
 
-## 🚀 Quick Start
+### Questionario di Feedback
+- **Sezioni multiple**: Pulizia, funzionamento elettrodomestici, valutazioni, commenti
+- **Personalizzazione**: Questionario adattato agli elettrodomestici configurati
+- **Salvataggio**: Dati salvati localmente e opzionalmente su database
 
-### Prerequisiti
-- Node.js (versione 16 o superiore)
-- npm o yarn
+### Pannello Amministrativo
+- **Statistiche**: Visualizza metriche sui feedback ricevuti
+- **Esportazione CSV**: Esporta tutti i dati in formato CSV
+- **Gestione dati**: Elimina tutti i questionari se necessario
 
-### Installazione
+## 📱 Come Utilizzare i QR Code
 
-1. **Clona o scarica il progetto**
-```bash
-git clone <repository-url>
-cd airbnbpwa
-```
+### Per il Proprietario
+1. Accedi al pannello amministrativo (`/admin`)
+2. Vai alla sezione "Gestione Proprietà" (`/properties`)
+3. Per ogni proprietà, clicca sull'icona QR Code (📱)
+4. Il QR code generato contiene il link diretto al questionario per quella proprietà
+5. Condividi il QR code con gli ospiti alla fine del soggiorno
 
-2. **Installa le dipendenze**
+### Per gli Ospiti
+1. Scansiona il QR code con la fotocamera del telefono
+2. Il link si aprirà direttamente nel questionario personalizzato per quella proprietà
+3. Compila il questionario (2-3 minuti)
+4. I dati vengono salvati automaticamente
+
+## 🔧 Installazione
+
 ```bash
 npm install
-```
-
-3. **Avvia il server di sviluppo**
-```bash
 npm run dev
 ```
 
-4. **Apri nel browser**
-   - Vai su `http://localhost:5173`
-   - L'applicazione sarà pronta all'uso!
+## 📊 Database
 
-## 📱 Generazione Icone PWA
+L'applicazione supporta sia il salvataggio locale che su Supabase. Configura le variabili d'ambiente:
 
-Per generare le icone PWA necessarie:
-
-1. Apri `http://localhost:5173/icon-generator.html` nel browser
-2. Clicca su "Genera e Scarica Icone"
-3. Salva le icone generate nella cartella `public/`
-
-Le icone necessarie sono:
-- `pwa-192x192.png` (192x192 px)
-- `pwa-512x512.png` (512x512 px)  
-- `apple-touch-icon.png` (180x180 px)
-
-## 📊 Sezioni del Questionario
-
-### 1. **Introduzione**
-- Spiegazione dell'importanza del feedback
-- Informazioni sulla privacy
-- Tempo stimato di completamento
-
-### 2. **Pulizia**
-- Valutazione pulizia complessiva (1-5 stelle)
-- Aree specifiche meno pulite (condizionale)
-- Stato lenzuola e asciugamani
-- Ordine generale dell'alloggio
-
-### 3. **Funzionamento Elettrodomestici**
-- Tabella completa con tutti gli elettrodomestici
-- Stato: Funzionante / Problema / Non Presente
-- Campo descrizione problemi (condizionale)
-
-### 4. **Valutazioni Globali**
-- NPS Score (0-10) con slider interattivo
-- Motivo della valutazione NPS
-- Valutazione complessiva soggiorno (1-5 stelle)
-- Probabilità di tornare
-
-### 5. **Commenti e Suggerimenti**
-- Cosa è stato apprezzato di più
-- Suggerimenti per miglioramenti
-- Consenso per ricontatto
-- Informazioni di contatto (opzionali)
-
-### 6. **Ringraziamento**
-- Conferma invio
-- Informazioni su prossimi passi
-- Possibilità di compilare nuovo questionario
-
-## 🔧 Pannello Amministrativo
-
-Accedi al pannello admin su `/admin` per:
-
-### 📈 Statistiche in Tempo Reale
-- Numero totale questionari
-- Valutazione media (stelle)
-- NPS medio
-- Data ultimo invio
-
-### 📋 Gestione Dati
-- Visualizzazione tutti i questionari
-- Dettagli completi di ogni submission
-- Filtri e ricerca avanzata
-
-### 📥 Esportazione
-- **Export CSV**: Scarica tutti i dati in formato CSV
-- **Analisi Excel**: Compatibile con Excel e Google Sheets
-- **Backup**: Funzione di backup e ripristino dati
-
-## 💾 Gestione Dati
-
-### Salvataggio Locale
-- I dati vengono salvati automaticamente nel `localStorage` del browser
-- Nessun server richiesto per il funzionamento base
-- Persistenza dei dati tra le sessioni
-
-### Struttura Dati
-```javascript
-{
-  id: "unique_id",
-  timestamp: "2024-01-15T10:30:00Z",
-  data: {
-    pulizia_complessiva: 5,
-    aree_meno_pulite: ["Bagno"],
-    nps_score: 9,
-    valutazione_complessiva: 5,
-    // ... altri campi
-  },
-  status: "completed"
-}
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-### Integrazione Server (Opzionale)
-Per integrare con un backend:
+## 🎯 Vantaggi
 
-1. Modifica `src/services/formService.js`
-2. Implementa la funzione `sendToServer()`
-3. Configura endpoint API nel file di configurazione
+- **Facilità d'uso**: QR code semplici da scansionare
+- **Personalizzazione**: Questionari adattati a ogni proprietà
+- **Offline**: Funziona anche senza connessione internet
+- **PWA**: Installabile come app nativa
+- **Responsive**: Ottimizzata per mobile e desktop
 
-## 🛠️ Tecnologie Utilizzate
+## 📈 Metriche Disponibili
 
-- **React 18**: Framework JavaScript
-- **Material-UI 5**: Libreria componenti UI
-- **Formik**: Gestione form e validazione
-- **Yup**: Schema validation
-- **React Router**: Routing e navigazione
-- **Vite**: Build tool e dev server
-- **PWA Plugin**: Service worker e manifest
+- Numero totale di questionari
+- Valutazione media della pulizia
+- NPS (Net Promoter Score) medio
+- Tasso di ritorno degli ospiti
+- Ultimo invio ricevuto
 
-## 📁 Struttura Progetto
+## 🔐 Sicurezza
 
-```
-airbnbpwa/
-├── public/
-│   ├── manifest.json
-│   ├── icon-generator.html
-│   └── [icone PWA]
-├── src/
-│   ├── components/
-│   │   ├── FormWizard.jsx
-│   │   ├── AdminPanel.jsx
-│   │   └── sections/
-│   │       ├── IntroSection.jsx
-│   │       ├── PuliziaSection.jsx
-│   │       ├── FunzionamentoSection.jsx
-│   │       ├── ValutazioniSection.jsx
-│   │       ├── CommentiSection.jsx
-│   │       └── ThankYouSection.jsx
-│   ├── services/
-│   │   └── formService.js
-│   ├── utils/
-│   │   └── generateIcons.js
-│   ├── App.jsx
-│   └── main.jsx
-├── package.json
-├── vite.config.js
-└── README.md
-```
-
-## 🚀 Deploy in Produzione
-
-### Build per Produzione
-```bash
-npm run build
-```
-
-### Deploy Options
-
-#### 1. **Netlify** (Raccomandato)
-```bash
-npm run build
-# Carica la cartella dist/ su Netlify
-```
-
-#### 2. **Vercel**
-```bash
-npm run build
-# Deploy automatico tramite Vercel CLI
-```
-
-#### 3. **Server Statico**
-```bash
-npm run build
-# Copia dist/ sul tuo server web
-```
-
-### Configurazione HTTPS
-⚠️ **Importante**: Le PWA richiedono HTTPS in produzione!
-
-## 🔒 Privacy e GDPR
-
-L'applicazione è progettata per essere conforme GDPR:
-
-- ✅ Consenso esplicito per il trattamento dati
-- ✅ Informativa privacy chiara
-- ✅ Possibilità di non fornire dati opzionali
-- ✅ Diritto di ricontatto opzionale
-- ✅ Dati salvati localmente (privacy by design)
-
-## 🎨 Personalizzazione
-
-### Tema e Colori
-Modifica `src/App.jsx` per personalizzare:
-```javascript
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#FF5A5F', // Cambia colore primario
-    },
-    // ... altri colori
-  },
-});
-```
-
-### Aggiungere Domande
-1. Modifica `src/components/FormWizard.jsx` (initialValues)
-2. Aggiorna la sezione appropriata in `src/components/sections/`
-3. Aggiorna lo schema di validazione se necessario
-
-## 🐛 Troubleshooting
-
-### Problemi Comuni
-
-**PWA non si installa**
-- Verifica HTTPS in produzione
-- Controlla che tutte le icone siano presenti
-- Verifica il manifest.json
-
-**Dati non si salvano**
-- Controlla la console per errori JavaScript
-- Verifica che localStorage sia abilitato
-- Testa in modalità incognito
-
-**Errori di build**
-```bash
-rm -rf node_modules package-lock.json
-npm install
-npm run build
-```
-
-## 📞 Supporto
-
-Per problemi o domande:
-- 📧 Email: [inserisci email]
-- 🐛 Issues: [Link repository GitHub]
-- 📖 Documentazione: [Link documentazione]
-
-## 📄 Licenza
-
-MIT License - Vedi file LICENSE per dettagli.
-
----
-
-**Sviluppato con ❤️ per migliorare l'esperienza ospiti Airbnb**
+- Accesso amministrativo protetto
+- Dati salvati localmente con fallback
+- Nessun dato personale richiesto agli ospiti
+- Conformità GDPR
