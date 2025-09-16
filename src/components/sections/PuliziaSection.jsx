@@ -17,6 +17,7 @@ import {
   Alert,
 } from '@mui/material';
 import { CleaningServices } from '@mui/icons-material';
+import ImageUpload from '../ImageUpload';
 
 function PuliziaSection({ formik }) {
   const { values, setFieldValue, errors, touched } = formik;
@@ -29,7 +30,20 @@ function PuliziaSection({ formik }) {
     'Altro'
   ];
 
-  const showAreaSelection = values.pulizia_complessiva && values.pulizia_complessiva <= 3;
+  const showAreaSelection = values.pulizia_complessiva && values.pulizia_complessiva <= 2;
+
+  // Gestione immagini per area
+  const handleImagesChange = (area, images) => {
+    const currentImages = values.pulizia_immagini || {};
+    setFieldValue('pulizia_immagini', {
+      ...currentImages,
+      [area]: images
+    });
+  };
+
+  const getImagesForArea = (area) => {
+    return values.pulizia_immagini?.[area] || [];
+  };
 
   return (
     <Box>
@@ -84,24 +98,42 @@ function PuliziaSection({ formik }) {
               
               <FormGroup>
                 {areeOptions.map((area) => (
-                  <FormControlLabel
-                    key={area}
-                    control={
-                      <Checkbox
-                        checked={values.aree_meno_pulite?.includes(area) || false}
-                        onChange={(event) => {
-                          const currentAree = values.aree_meno_pulite || [];
-                          if (event.target.checked) {
-                            setFieldValue('aree_meno_pulite', [...currentAree, area]);
-                          } else {
-                            setFieldValue('aree_meno_pulite', currentAree.filter(a => a !== area));
-                          }
-                        }}
-                        name="aree_meno_pulite"
-                      />
-                    }
-                    label={area}
-                  />
+                  <Box key={area}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={values.aree_meno_pulite?.includes(area) || false}
+                          onChange={(event) => {
+                            const currentAree = values.aree_meno_pulite || [];
+                            if (event.target.checked) {
+                              setFieldValue('aree_meno_pulite', [...currentAree, area]);
+                            } else {
+                              setFieldValue('aree_meno_pulite', currentAree.filter(a => a !== area));
+                              // Rimuovi anche le immagini se l'area viene deselezionata
+                              const currentImages = values.pulizia_immagini || {};
+                              const updatedImages = { ...currentImages };
+                              delete updatedImages[area];
+                              setFieldValue('pulizia_immagini', updatedImages);
+                            }
+                          }}
+                          name="aree_meno_pulite"
+                        />
+                      }
+                      label={area}
+                    />
+                    
+                    {/* Upload immagini per area selezionata */}
+                    {values.aree_meno_pulite?.includes(area) && (
+                      <Box sx={{ ml: 4, mb: 2 }}>
+                        <ImageUpload
+                          area={area}
+                          images={getImagesForArea(area)}
+                          onImagesChange={(images) => handleImagesChange(area, images)}
+                          maxImages={3}
+                        />
+                      </Box>
+                    )}
+                  </Box>
                 ))}
               </FormGroup>
 

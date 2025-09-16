@@ -19,7 +19,14 @@ class FormService {
         const { default: SupabaseServiceModule } = await import('./supabaseService');
         const supabaseService = new SupabaseServiceModule();
         
-        const result = await supabaseService.saveForm(formData);
+        let result;
+        // Usa il metodo con upload immagini se ci sono immagini
+        if (formData.pulizia_immagini && Object.keys(formData.pulizia_immagini).length > 0) {
+          result = await supabaseService.saveFormWithImages(formData);
+        } else {
+          result = await supabaseService.saveForm(formData);
+        }
+        
         if (result.success) {
           databaseSuccess = true;
           console.log('Form salvato nel database con successo');
@@ -254,7 +261,16 @@ class FormService {
         const { default: SupabaseServiceModule } = await import('./supabaseService');
         const supabaseService = new SupabaseServiceModule();
         
-        const result = await supabaseService.saveFormWithPropertyId(formData, propertyId);
+        let result;
+        // Usa il metodo con upload immagini se ci sono immagini
+        if (formData.pulizia_immagini && Object.keys(formData.pulizia_immagini).length > 0) {
+          // Prima modifica i dati per includere property_id
+          const formDataWithProperty = { ...formData, property_id: propertyId };
+          result = await supabaseService.saveFormWithImages(formDataWithProperty);
+        } else {
+          result = await supabaseService.saveFormWithPropertyId(formData, propertyId);
+        }
+        
         if (result.success) {
           databaseSuccess = true;
           console.log('Form salvato nel database con property_id:', propertyId);

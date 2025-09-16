@@ -472,6 +472,123 @@ class SupabaseService {
       return { success: false, error: error.message };
     }
   }
+
+  // Image upload methods
+  async uploadImage(file, path) {
+    try {
+      // Genera un nome file unico
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const fullPath = `${path}/${fileName}`;
+
+      const { data, error } = await this.supabase.storage
+        .from('feedback-images')
+        .upload(fullPath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      // Ottieni l'URL pubblico
+      const { data: { publicUrl } } = this.supabase.storage
+        .from('feedback-images')
+        .getPublicUrl(fullPath);
+
+      return { 
+        success: true, 
+        data: {
+          path: fullPath,
+          url: publicUrl,
+          fileName
+        }
+      };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async uploadMultipleImages(images, basePath) {
+    try {
+      const uploadPromises = images.map(async (imageData) => {
+        if (!imageData.file || imageData.uploaded) {
+          return imageData; // Già caricata o non è un file
+        }
+
+        const result = await this.uploadImage(imageData.file, basePath);
+        if (result.success) {
+          return {
+            ...imageData,
+            url: result.data.url,
+            path: result.data.path,
+            uploaded: true,
+            file: null // Rimuovi il file object dopo upload
+          };
+        } else {
+          throw new Error(`Errore upload ${imageData.area}: ${result.error}`);
+        }
+      });
+
+      const uploadedImages = await Promise.all(uploadPromises);
+      return { success: true, data: uploadedImages };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async deleteImage(path) {
+    try {
+      const { error } = await this.supabase.storage
+        .from('feedback-images')
+        .remove([path]);
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Metodo aggiornato per salvare form con immagini
+  async saveFormWithImages(formData) {
+    try {
+      // Prepara i dati delle immagini per il salvataggio
+      let processedFormData = { ...formData };
+      
+      if (formData.pulizia_immagini) {
+        const imagesByArea = {};
+
+        // Processa le immagini per area
+        Object.entries(formData.pulizia_immagini).forEach(([area, images]) => {
+          if (images && images.length > 0) {
+            // Filtra solo le immagini già caricate con successo
+            const uploadedImages = images.filter(img => img.uploaded && img.url);
+            
+            if (uploadedImages.length > 0) {
+              imagesByArea[area] = uploadedImages.map(img => ({
+                url: img.url,
+                path: img.path,
+                area: img.area
+              }));
+            }
+          }
+        });
+
+        // Sostituisci con le immagini processate
+        processedFormData.pulizia_immagini = Object.keys(imagesByArea).length > 0 ? imagesByArea : null;
+      }
+
+      // Salva il form con i link alle immagini
+      return await this.saveForm(processedFormData);
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
 }
 
 export default SupabaseService; 
