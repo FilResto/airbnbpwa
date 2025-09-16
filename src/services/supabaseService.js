@@ -98,21 +98,37 @@ class SupabaseService {
   // Salva un questionario
   async saveForm(formData) {
     try {
+      console.log('🔍 Tentativo salvataggio in Supabase...');
+      console.log('📦 Dati form da salvare:', formData);
+      
+      const formToInsert = {
+        form_data: formData,
+        created_at: new Date().toISOString(),
+        property_id: null // Permette di salvare senza property_id
+      };
+      
+      console.log('📄 Payload da inserire:', formToInsert);
+      
       const { data, error } = await this.supabase
         .from('feedback')
-        .insert({
-          form_data: formData,
-          created_at: new Date().toISOString(),
-          property_id: null // Permette di salvare senza property_id
-        })
+        .insert(formToInsert)
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Errore Supabase:', error);
+        throw error;
+      }
       
-      console.log('Form salvato in Supabase:', data);
+      console.log('✅ Form salvato in Supabase con successo:', data);
       return { success: true, id: data[0].id };
     } catch (error) {
-      console.error('Errore salvataggio Supabase:', error);
+      console.error('💥 Errore salvataggio Supabase:', error);
+      console.error('💥 Dettagli errore:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
       return { success: false, error: error.message };
     }
   }
@@ -384,21 +400,38 @@ class SupabaseService {
   // Salva form con property_id specifico
   async saveFormWithPropertyId(formData, propertyId) {
     try {
+      console.log('🔍 Tentativo salvataggio con property_id in Supabase...');
+      console.log('📦 Dati form da salvare:', formData);
+      console.log('🏠 Property ID:', propertyId);
+      
+      const formToInsert = {
+        form_data: formData,
+        property_id: propertyId,
+        created_at: new Date().toISOString()
+      };
+      
+      console.log('📄 Payload da inserire:', formToInsert);
+      
       const { data, error } = await this.supabase
         .from('feedback')
-        .insert({
-          form_data: formData,
-          property_id: propertyId,
-          created_at: new Date().toISOString()
-        })
+        .insert(formToInsert)
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Errore Supabase con property_id:', error);
+        throw error;
+      }
       
-      console.log('Form salvato in Supabase con property_id:', data);
+      console.log('✅ Form salvato in Supabase con property_id con successo:', data);
       return { success: true, id: data[0].id };
     } catch (error) {
-      console.error('Errore salvataggio Supabase con property_id:', error);
+      console.error('💥 Errore salvataggio Supabase con property_id:', error);
+      console.error('💥 Dettagli errore:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
       return { success: false, error: error.message };
     }
   }
@@ -557,17 +590,23 @@ class SupabaseService {
   // Metodo aggiornato per salvare form con immagini
   async saveFormWithImages(formData) {
     try {
+      console.log('🖼️ Salvataggio form con immagini...');
+      console.log('📦 Form data originale:', formData);
+      
       // Prepara i dati delle immagini per il salvataggio
       let processedFormData = { ...formData };
       
       if (formData.pulizia_immagini) {
+        console.log('🔍 Processando immagini pulizia...');
         const imagesByArea = {};
 
         // Processa le immagini per area
         Object.entries(formData.pulizia_immagini).forEach(([area, images]) => {
+          console.log(`📁 Area ${area}:`, images);
           if (images && images.length > 0) {
             // Filtra solo le immagini già caricate con successo
             const uploadedImages = images.filter(img => img.uploaded && img.url);
+            console.log(`✅ Immagini caricate per ${area}:`, uploadedImages);
             
             if (uploadedImages.length > 0) {
               imagesByArea[area] = uploadedImages.map(img => ({
@@ -581,11 +620,27 @@ class SupabaseService {
 
         // Sostituisci con le immagini processate
         processedFormData.pulizia_immagini = Object.keys(imagesByArea).length > 0 ? imagesByArea : null;
+        console.log('🔄 Form data processato:', processedFormData);
       }
 
       // Salva il form con i link alle immagini
-      return await this.saveForm(processedFormData);
+      console.log('💾 Chiamando saveForm...');
+      
+      // Se c'è un property_id nei dati processati, usa saveFormWithPropertyId
+      if (processedFormData.property_id) {
+        console.log('🏠 Property ID rilevato, usando saveFormWithPropertyId');
+        const propertyId = processedFormData.property_id;
+        delete processedFormData.property_id; // Rimuovi dai form_data per evitare duplicazione
+        const result = await this.saveFormWithPropertyId(processedFormData, propertyId);
+        console.log('📊 Risultato saveFormWithPropertyId:', result);
+        return result;
+      } else {
+        const result = await this.saveForm(processedFormData);
+        console.log('📊 Risultato saveForm:', result);
+        return result;
+      }
     } catch (error) {
+      console.error('💥 Errore in saveFormWithImages:', error);
       return { success: false, error: error.message };
     }
   }

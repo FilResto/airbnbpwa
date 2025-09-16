@@ -22,14 +22,20 @@ class FormService {
         let result;
         // Usa il metodo con upload immagini se ci sono immagini
         if (formData.pulizia_immagini && Object.keys(formData.pulizia_immagini).length > 0) {
+          console.log('🖼️ FormService: Rilevate immagini, usando saveFormWithImages');
           result = await supabaseService.saveFormWithImages(formData);
         } else {
+          console.log('📝 FormService: Nessuna immagine, usando saveForm normale');
           result = await supabaseService.saveForm(formData);
         }
         
+        console.log('📊 FormService: Risultato dal database:', result);
+        
         if (result.success) {
           databaseSuccess = true;
-          console.log('Form salvato nel database con successo');
+          console.log('✅ Form salvato nel database con successo');
+        } else {
+          console.error('❌ Errore salvataggio database:', result.error);
         }
       } catch (error) {
         console.warn('Fallback a localStorage:', error);
@@ -264,16 +270,22 @@ class FormService {
         let result;
         // Usa il metodo con upload immagini se ci sono immagini
         if (formData.pulizia_immagini && Object.keys(formData.pulizia_immagini).length > 0) {
+          console.log('🖼️ FormService: Rilevate immagini con property_id, usando saveFormWithImages');
           // Prima modifica i dati per includere property_id
           const formDataWithProperty = { ...formData, property_id: propertyId };
           result = await supabaseService.saveFormWithImages(formDataWithProperty);
         } else {
+          console.log('📝 FormService: Nessuna immagine con property_id, usando saveFormWithPropertyId');
           result = await supabaseService.saveFormWithPropertyId(formData, propertyId);
         }
         
+        console.log('📊 FormService: Risultato dal database con property_id:', result);
+        
         if (result.success) {
           databaseSuccess = true;
-          console.log('Form salvato nel database con property_id:', propertyId);
+          console.log('✅ Form salvato nel database con property_id:', propertyId);
+        } else {
+          console.error('❌ Errore salvataggio database con property_id:', result.error);
         }
       } catch (error) {
         console.warn('Fallback a localStorage:', error);
